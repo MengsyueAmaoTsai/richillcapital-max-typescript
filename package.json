@@ -1,0 +1,11 @@
+{
+  "name": "richillcapital-max",
+  "version": "1.0.0",
+  "description": "MAX(Taiwan) crypto exchange API SDK for TypeSciprt.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mengsyue Amao Tsai <mengsyue.tsai@outlook.com>",
+  "license": "MIT"
+}
