@@ -8,12 +8,22 @@
     "./dist"
   ],
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc",
+    "build:clean": "npm run clean && npm run build",
+    "build:watch": "npm run clean && tsc --watch",
     "release": "npm publish"
   },
   "author": "Mengsyue Amao Tsai <mengsyue.tsai@outlook.com>",
   "license": "MIT",
   "dependencies": {
     "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1"
   }
 }
