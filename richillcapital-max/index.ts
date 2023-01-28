@@ -1,91 +1,164 @@
+import { createHmac } from "crypto";
+import * as qs from 'qs';
+import { 
+    MaxMarket, 
+    MaxCurrency, 
+    MaxTicker
+} from './max-type';
 
 const REST_URL = 'https://max-api.maicoin.com';
+const WEBSOCKET_URL = 'wss://max-stream.maicoin.com/ws';
 
-interface VipLevel {
-    level: number;
-    minTradingVolume: number;
-    minStakingVolume: number;
-    makerFee: number;
-    takerFee: number;
+interface Market {
+    id: string;
+    name: string;
+    marketStatus: string;
+    baseUnit: string;
+    baseUnitPrecision: number;
+    minBaseAmount: number;
+    quoteUnit: string;
+    quoteUnitPrecision: number;
+    minQuoteAmount: number;
+    mWalletSupported: boolean;
 }
 
-interface VipLevelData {
-    level: number,
-    minimum_trading_volume: number,
-    minimum_staking_volume: number,
-    taker_fee: number,
-    maker_fee: number,    
+interface Currency {
+    id: string,
+    precision: number,
+    sygnaSupported: boolean,
+    mWalletSupported: boolean,
+    minBorrowAmount: string
+}
+
+interface Ticker {
+    market: string,
+    timestamp: number,
+    last: number,
+    bid: number,
+    ask: number,
+    open: number,
+    low: number,
+    high: number,
+    volume: number,
+    volumeInBtc: number,
 }
 
 class MaxClient {
-    protected _apiKey: string;
-    protected _secretKey: string;
+   
+    constructor() {
 
-    public constructor(apiKey: string, secretKey: string) {
-        this._apiKey = apiKey;
-        this._secretKey = secretKey;
     }
 
-    //#region REST API Public
+    public getMarkets = async (): Promise<Market[]> => {
+        const endpoint = '/api/v2/markets';
 
-    /**
-     * Get all vip level fees.
-     */
-    public getVipLevels = async (): Promise<VipLevel[]> => {
-        const endpoint = '/api/v2/vip_levels';
+        const uri = this.__buildUri(endpoint);
+        console.log(`Request Uri: ${uri}`);
 
-        const url = REST_URL + endpoint;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.status !== 200) {
-            console.log(`Something went wrong on fetch()`);
-            return [] as VipLevel[]
-        } else {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            const response = await fetch(uri, {
+                method: 'GET',
+                headers: headers
+            });
             const data = await response.json();
-            return data.map((item: VipLevelData) => {
+            const markets: Market[] = data.map((market: MaxMarket) => {
                 return {
-                    level: item.level,
-                    minTradeVolume: item.minimum_trading_volume,
-                    minStakingVolume: item.minimum_staking_volume,
-                    takerFee: item.taker_fee,
-                    makerFee: item.maker_fee,
+                    id: market.id,
+                    name: market.name,
+                    marketStatus: market.market_status,
+                    baseUnit: market.base_unit,
+                    baseUnitPrecision: market.base_unit_precision,
+                    minBaseAmount: market.min_base_amount,
+                    quoteUnit: market.quote_unit,
+                    quoteUnitPrecision: market.quote_unit_precision,
+                    minQuoteAmount: market.min_quote_amount,
+                    mWalletSupported: market.m_wallet_supported,
+                }
+            })
+            return markets;
+        } catch (error) {
+            console.log(`Error when send request to ${uri} Error: ${error}`);
+            return [] as Market[];
+        }
+    };
+
+    public getCurrencies = async (): Promise<Currency[]> => {
+        const endpoint = '/api/v2/currencies';
+
+        const uri = this.__buildUri(endpoint);
+        console.log(`Request Uri: ${uri}`);
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            const response = await fetch(uri, {
+                method: 'GET',
+                headers: headers
+            });
+            const data: MaxCurrency[] = await response.json();
+            return data.map(item => {
+                return {
+                    id: item.id,
+                    precision: item.precision,
+                    sygnaSupported: item.sygna_supported,
+                    mWalletSupported: item.m_wallet_supported,
+                    minBorrowAmount: item.min_borrow_amount
                 }
             });
-        }
-    }
-
-    public getVipLevel = async (level: number): Promise<VipLevel | null> => {
-        const endpoint = `/api/v2/vip_levels/${level}`;
-
-        const url = REST_URL + endpoint;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (response.status !== 200) {
-            console.log(`Something went wrong on fetch()`);
-            return null;
-        } else {
-            const data: VipLevelData = await response.json();
-            return {
-                level: data.level,
-                minStakingVolume: data.minimum_staking_volume,
-                minTradingVolume: data.minimum_trading_volume,
-                takerFee: data.taker_fee,
-                makerFee: data.maker_fee 
-            }
+        } catch (error) {
+            console.log(`Error when send request to ${uri} Error: ${error}`);
+            return [] as Currency[];
         }        
-    }
+    };
 
-    //#endregion
+    public getTickers = async (market: string): Promise<Ticker> => {
+        const endpoint = `/api/v2/tickers/${market}`;
+
+        const uri = this.__buildUri(endpoint);
+        console.log(`Request Uri: ${uri}`);
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            const response = await fetch(uri, {
+                method: 'GET',
+                headers: headers
+            });
+            const data: MaxTicker = await response.json();
+            return {
+                market: market,
+                timestamp: data.at,
+                last: Number(data.last),
+                bid: Number(data.buy),
+                ask: Number(data.sell),
+                open: Number(data.open),
+                low: Number(data.low),
+                high: Number(data.high),
+                volume: Number(data.vol),
+                volumeInBtc: Number(data.vol_in_btc),
+            };                    
+        } catch (error) {
+            console.log(`Error when send request to ${uri} Error: ${error}`);
+            return {} as Ticker;
+        }   
+    };
+  
+    private __buildUri = (endpoint: string, queryParameters: {} = {}): string => {
+        let uri = `${REST_URL}${endpoint}`;
+
+        if (Object.keys(queryParameters).length > 0) {
+            uri += `?${qs.stringify(queryParameters, { arrayFormat: 'brackets' })}`
+        }
+        return uri;
+    };
 }
 
 export default MaxClient;
