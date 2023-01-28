@@ -44,7 +44,10 @@ interface Ticker {
 }
 
 class MaxClient {
-   
+    private __defaultHeaders = {
+        'Content-Type': 'application/json'
+    }
+
     constructor() {
 
     }
@@ -55,14 +58,10 @@ class MaxClient {
         const uri = this.__buildUri(endpoint);
         console.log(`Request Uri: ${uri}`);
 
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-
         try {
             const response = await fetch(uri, {
                 method: 'GET',
-                headers: headers
+                headers: this.__defaultHeaders
             });
             const data = await response.json();
             const markets: Market[] = data.map((market: MaxMarket) => {
@@ -92,14 +91,10 @@ class MaxClient {
         const uri = this.__buildUri(endpoint);
         console.log(`Request Uri: ${uri}`);
 
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-
         try {
             const response = await fetch(uri, {
                 method: 'GET',
-                headers: headers
+                headers: this.__defaultHeaders
             });
             const data: MaxCurrency[] = await response.json();
             return data.map(item => {
@@ -123,14 +118,10 @@ class MaxClient {
         const uri = this.__buildUri(endpoint);
         console.log(`Request Uri: ${uri}`);
 
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-
         try {
             const response = await fetch(uri, {
                 method: 'GET',
-                headers: headers
+                headers: this.__defaultHeaders
             });
             const data: MaxTicker = await response.json();
             return {
