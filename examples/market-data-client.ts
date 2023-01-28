@@ -9,7 +9,10 @@ dotenv.config();
     console.log(apiKey, secretKey);
 
     const client = new MaxClient();
-
+    // Get server time.
+    const serverTime = await client.getServerTime();
+    console.log(`Server time: ${serverTime}`);
+    
     // Get Markets
     const markets = await client.getMarkets();
     console.log(`Markets of MAX: ${markets.length}`);

@@ -141,7 +141,25 @@ class MaxClient {
             return {} as Ticker;
         }   
     };
-  
+    
+    public getServerTime = async (): Promise<number> => {
+        const endpoint = '/api/v2/timestamp';
+
+        const uri = this.__buildUri(endpoint);
+        console.log(`Request Uri: ${uri}`);
+
+        try {
+            const response = await fetch(uri, {
+                method: 'GET',
+                headers: this.__defaultHeaders
+            });
+            return await response.json() as number;
+        } catch (error) {
+            console.log(`Error when send request to ${uri} Error: ${error}`);
+            return 0;
+        }   
+    };
+
     private __buildUri = (endpoint: string, queryParameters: {} = {}): string => {
         let uri = `${REST_URL}${endpoint}`;
 
