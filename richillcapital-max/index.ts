@@ -1,6 +1,9 @@
 import { createHmac } from "crypto";
 import * as crypto from 'crypto';
+import EventEmitter from "events";
+
 import * as qs from 'qs';
+import WebSocket, { RawData } from "ws";
 
 import { 
     MaxMarket, 
@@ -55,8 +58,9 @@ interface Ticker {
     volumeInBtc: number,
 }
 
-class MaxClient {
+class MaxClient extends EventEmitter {
 
+    private _websocketClient?: WebSocket;
     private __defaultHeaders = {
         'Content-Type': 'application/json'
     }
@@ -65,12 +69,18 @@ class MaxClient {
     private _secretKey: string = '';
 
     public constructor() {
+        super()
     }
 
     public connect = (apiKey: string, secretKey: string) => {
         console.log(`Connecting to MAX exchange. API_KEY: ${apiKey} SECRET_KET: ${secretKey}`);
         this._apiKey = apiKey;
         this._secretKey = secretKey;
+        this._websocketClient = new WebSocket(WEBSOCKET_URL);
+        this._websocketClient.on('open', this.__onWebSocketOpen.bind(this))
+        this._websocketClient.on('close', this.__onWebSocketClose.bind(this))
+        this._websocketClient.on('error', this.__onWebSocketError.bind(this))
+        this._websocketClient.on('message', this.__onWebSocketMessage.bind(this))        
     };
 
     /**
@@ -685,18 +695,158 @@ class MaxClient {
 
     //#region WebSocket event handlers
     private __onWebSocketOpen = () => {
+        console.log('Websocket opened');
     };
 
-    private __onWebSocketClose = () => {
+    private __onWebSocketClose = (code: number, reason: Buffer) => {
+        console.log(`Websocket closed => Code: ${code} Reason: ${reason}`);
     };
 
-    private __onWebSocketError = () => {
+    private __onWebSocketError = (error: Error) => {
+        console.log(`Websocket error: ${error}`);
     }
 
-    private __onWebSocketMessage = () => {
+    private __onWebSocketMessage = (data: RawData, isBinary: boolean) => {
+        console.log(`Websocket Message => RawData: ${data} isBinary: ${isBinary}`);
     };
 
     //#endregion
+
+    public subscribeMarketTrade = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+    public unsubscribeMarketTrade = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public subscribeOrderBook = (market: string, depth: number = 10) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market,
+                    depth: depth
+                }
+            ]
+        };
+    };
+
+    public unsubscribeOrderBook = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market,
+                }
+            ]
+        };
+    };
+
+    public subscribeMarketStatus = (): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };        
+    };
+
+    public unsubscribeMarketStatus = (): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };        
+    };
+
+    public subscribeTicker = (market: string): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    market: market,
+                    channel: 'ticker',
+                }
+            ]
+        };                
+    };
+
+    public unsubscribeTicker = (market: string): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    market: market,
+                    channel: 'ticker',
+                }
+            ]
+        };           
+    };
+    
+    public subscribeAccount = (): void => {
+    };
+
+    public unsubscribeAccount = (): void => {
+    };
+
+    public subscribeOrder = (): void => {
+    };
+
+    public unsubscribeOrder = (): void => {
+    };
+
+    public subscribeTrade = (): void => {
+    };
+
+    public unsubscribeTrade = (): void => {
+
+    };
+
+    public authenticate = (): void => {
+        const hmac = crypto.createHmac('sha256', this._secretKey);
+        const nonce = Date.now()
+        const signature = hmac.update(nonce.toString()).digest('hex')
+        const data = {
+            action: 'auth',
+            apiKey: this._apiKey,
+            signature,
+            nonce,
+        };
+        this._websocketClient?.send(JSON.stringify(data));        
+    };
 }
 
 export default MaxClient;
