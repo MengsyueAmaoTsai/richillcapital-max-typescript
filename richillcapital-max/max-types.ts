@@ -133,3 +133,22 @@ export type InternalTransfer = {
     to_member: string
 }
 
+export type MarketTrade = {
+    id: number,
+    price: string,
+    volume: string,
+    funds: string,
+    market: string,
+    market_name: string,
+    created_at: number,
+    created_at_in_ms: number,
+    side: string
+}
+
+export type Depth = {
+    timestamp: number,
+    last_update_version: number,
+    last_update_id: number,
+    asks: Array<number>[],
+    bids: Array<number>[]
+}

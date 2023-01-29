@@ -71,3 +71,39 @@ export interface MaxOrder {
     id: string,
     clientOrderId: string,
 }
+
+export interface MaxCandle {
+    market: string,
+    timestamp: number,
+    open: number,
+    high: number,
+    low: number,
+    close: number,
+    volume: number
+}
+
+export interface MaxMarketTrade {
+    id: number,
+    market: string,
+    marketName: string
+    price: number,
+    volume: number,
+    tradeVolume: number,
+    createAt: number,
+    createAtMS: number,
+    side: string,
+}
+
+export interface MaxDepth {
+    price: number,
+    size: number
+};
+
+export interface MaxOrderBook {
+    market: string,
+    timestamp: number,
+    lastUpdateVersion: number,
+    lastUpdateId: number,
+    asks: MaxDepth[],
+    bids: MaxDepth[]
+}

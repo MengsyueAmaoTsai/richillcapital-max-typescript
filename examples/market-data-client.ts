@@ -20,19 +20,21 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     // console.log(`Markets: ${markets.length}`);
 
     // Get k lines
-    const kLines = await client.getKLines(market);
-    console.log(kLines);
-
-    // Get orderbook
-    const orderBook = await client.getOrderBook(market);
-
-    // Get tickers
-    const tickers = await client.getTickers(market);
+    // const kLines = await client.getKLines(market);
+    // console.log(`Get k line of ${market} Count: ${kLines.length}`);
 
     // Get market trades 
-    const marketTrades = await client.getMarketTrades(market);
+    //const marketTrades = await client.getMarketTrades(market);
+    //console.log(`Get market trade of ${market} Count: ${marketTrades.length}`);
+    
+    // Get orderbook
+    const orderBook = await client.getOrderBook(market);
+    console.log(orderBook);
+    // Get tickers
+    // const tickers = await client.getTickers(market);
 
+    
     // Get summary
-    const summary = await client.getSummary();
+    // const summary = await client.getSummary();
 })();
 
