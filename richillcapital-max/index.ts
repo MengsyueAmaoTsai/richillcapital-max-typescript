@@ -76,12 +76,14 @@ class MaxClient extends EventEmitter {
         console.log(`Connecting to MAX exchange. API_KEY: ${apiKey} SECRET_KET: ${secretKey}`);
         this._apiKey = apiKey;
         this._secretKey = secretKey;
-        this._websocketClient = new WebSocket(WEBSOCKET_URL);
-        this._websocketClient.on('open', this.__onWebSocketOpen.bind(this))
-        this._websocketClient.on('close', this.__onWebSocketClose.bind(this))
-        this._websocketClient.on('error', this.__onWebSocketError.bind(this))
-        this._websocketClient.on('message', this.__onWebSocketMessage.bind(this))        
+        this._websocketClient = new WebSocket(WEBSOCKET_URL)
+            .on('open', this.__onWebSocketOpen.bind(this))
+            .on('close', this.__onWebSocketClose.bind(this))
+            .on('error', this.__onWebSocketError.bind(this))
+            .on('message', this.__onWebSocketMessage.bind(this));
     };
+
+    
 
     /**
      * Get all available markets.
