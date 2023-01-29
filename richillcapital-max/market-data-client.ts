@@ -5,7 +5,10 @@ interface MaxMarketDataClient {
 };
 
 class MaxMarketDataClient extends MaxClient {
-
+    constructor() {
+        super()
+    }
+    
     /**
      * Get depth of a specified market.
      * @param market 

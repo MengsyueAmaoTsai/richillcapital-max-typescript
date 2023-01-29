@@ -9,6 +9,10 @@ interface MaxTradingClient {
 
 class MaxTradingClient extends MaxClient {
 
+    constructor() {
+        super()
+    }
+
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
         const endpoint = `/api/v2/orders`;
         
@@ -197,6 +201,8 @@ class MaxTradingClient extends MaxClient {
         };
         this._websocketClient?.send(JSON.stringify(data));        
     };
+
+
 
     public subscribeAccount = (): void => {
     };
