@@ -1,5 +1,8 @@
 import MaxClient from "./client";
 
+interface MaxMarketDataClient {
+
+};
 
 class MaxMarketDataClient extends MaxClient {
 
@@ -124,6 +127,121 @@ class MaxMarketDataClient extends MaxClient {
             console.log(`Error when send request to ${uri} Error: ${error}`);
         }   
     };    
+
+    //#region WebSocket APIs
+    
+    public subscribeMarketTrade = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+    public unsubscribeMarketTrade = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public subscribeOrderBook = (market: string, depth: number = 10) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market,
+                    depth: depth
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+
+    };
+
+    public unsubscribeOrderBook = (market: string) => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market,
+                }
+            ]
+        };
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public subscribeMarketStatus = (): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };        
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public unsubscribeMarketStatus = (): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };        
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public subscribeTicker = (market: string): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'sub',
+            subscriptions: [
+                {
+                    market: market,
+                    channel: 'ticker',
+                }
+            ]
+        };                
+        this._websocketClient?.send(JSON.stringify(data));
+    };
+
+    public unsubscribeTicker = (market: string): void => {
+        const data = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    market: market,
+                    channel: 'ticker',
+                }
+            ]
+        };           
+        this._websocketClient?.send(JSON.stringify(data));
+    };    
+
+    //#endregion
 }
 
 

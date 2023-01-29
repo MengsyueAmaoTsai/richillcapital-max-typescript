@@ -48,10 +48,7 @@ dotenv.config();
     });
 
     client.connectWebSocket(apiKey, secretKey);
-    client.subscribeMarketStatus();
-    client.subscribeOrderBook(market);
-    client.subscribeTicker(market);
-    client.subscribeMarketTrade(market);
+
 
 })();
 
