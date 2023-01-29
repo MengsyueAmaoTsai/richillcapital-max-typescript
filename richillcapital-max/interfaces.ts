@@ -109,6 +109,7 @@ export interface MaxOrderBook {
 }
 
 export interface MaxTicker {
+    market: string,
     timestamp: number,
     bid: number,
     ask: number,

@@ -1,6 +1,6 @@
 import MaxClient from "./client";
-import { MaxCandle, MaxDepth, MaxMarketTrade, MaxOrderBook } from "./interfaces";
-import { OrderBook, MarketTrade } from "./max-types";
+import { MaxCandle, MaxDepth, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfaces";
+import { OrderBook, MarketTrade, Ticker } from "./max-types";
 
 interface MaxMarketDataClient {
 
@@ -109,13 +109,25 @@ class MaxMarketDataClient extends MaxClient {
     };
 
     /**
-     * Get ticker of specific market
+     * Get ticker of specific market.
      * @param market 
      * @returns 
      */
-    public getTickers = async (market: string): Promise<void> => {
-        const tickers = await this._sendPublicRequest('GET', `/api/v2/tickers/${market.toLowerCase()}`);
-        console.log(tickers);        
+    public getTicker = async (market: string): Promise<MaxTicker> => {
+        const ticker = await this._sendPublicRequest<Ticker>('GET', `/api/v2/tickers/${market.toLowerCase()}`);
+        return {
+            market: market.toUpperCase(),
+            timestamp: ticker.at,
+            bid: Number(ticker.buy),
+            ask: Number(ticker.sell),
+            last: Number(ticker.last),
+            open: Number(ticker.open),
+            high: Number(ticker.high),
+            low: Number(ticker.low),
+            volume: Number(ticker.vol),
+            volumeInBtc: Number(ticker.vol_in_btc),
+
+        }
     };    
     //#region WebSocket APIs
     

@@ -154,7 +154,7 @@ export type OrderBook = {
 }
 
 export type Ticker = {
-    timestamp: number,
+    at: number,
     buy: string,
     sell: string,
     open: string,
