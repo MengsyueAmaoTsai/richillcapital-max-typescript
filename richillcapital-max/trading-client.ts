@@ -9,8 +9,8 @@ interface MaxTradingClient {
 
 class MaxTradingClient extends MaxClient {
 
-    constructor() {
-        super()
+    public constructor(apiKey: string, secretKey: string) {
+        super(apiKey, secretKey)
     }
 
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {

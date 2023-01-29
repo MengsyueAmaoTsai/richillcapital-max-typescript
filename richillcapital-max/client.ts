@@ -17,14 +17,14 @@ abstract class MaxClient extends EventEmitter {
     protected _apiKey: string = '';
     protected _secretKey: string = '';
 
-    public constructor() {
+    public constructor(apiKey: string, secretKey: string) {
         super()
-    }
-    
-    public connectWebSocket = (apiKey: string, secretKey: string) => {
-        console.log(`Connecting to MAX exchange. API_KEY: ${apiKey} SECRET_KET: ${secretKey}`);
         this._apiKey = apiKey;
         this._secretKey = secretKey;
+    }
+    
+    public connectWebSocket = () => {
+
         this._websocketClient = new WebSocket(WEBSOCKET_URL)
             .on('open', this.__onWebSocketOpen.bind(this))
             .on('close', this.__onWebSocketClose.bind(this))

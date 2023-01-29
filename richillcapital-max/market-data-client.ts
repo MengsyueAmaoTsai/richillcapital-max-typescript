@@ -5,8 +5,9 @@ interface MaxMarketDataClient {
 };
 
 class MaxMarketDataClient extends MaxClient {
-    constructor() {
-        super()
+    
+    public constructor(apiKey: string, secretKey: string) {
+        super(apiKey, secretKey)
     }
     
     /**
