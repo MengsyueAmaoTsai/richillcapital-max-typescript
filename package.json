@@ -8,8 +8,11 @@
     "./dist"
   ],
   "scripts": {
-    "ex:mdc": "ts-node ./examples/market-data-client.ts",
-    "ex.tc": "ts-node ./examples/trading-client.ts",
+    "rest:market": "ts-node ./examples/market-data-client.ts",
+    "rest:trading": "ts-node ./examples/trading-client.ts",
+    "ws:market": "ts-node ./examples/market-data-client-ws.ts",
+    "ws:trading": "ts-node ./examples/trading-client-ws.ts",
+
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "tsc",
