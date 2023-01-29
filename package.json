@@ -48,7 +48,7 @@
     "build:clean": "npm run clean && npm run build",
     "build:watch": "npm run clean && tsc --watch",
     "pack": "webpack --config webpack/webpack.config.js",
-    "publish": "npm run build:clean && npm publish"
+    "publish:build": "npm run build:clean && npm publish"
   },
   "author": "Mengsyue Amao Tsai <mengsyue.tsai@outlook.com>",
   "license": "MIT",
