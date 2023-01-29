@@ -229,6 +229,7 @@ class MaxMarketDataClient extends MaxClient {
             ]
         };        
         this._websocketClient?.send(JSON.stringify(data));
+        console.log(`Subscribe => ${data}`);
     };
 
     public unsubscribeMarketStatus = (): void => {

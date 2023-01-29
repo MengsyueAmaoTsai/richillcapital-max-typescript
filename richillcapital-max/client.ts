@@ -158,25 +158,15 @@ abstract class MaxClient extends EventEmitter {
         return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
     };
 
-    //#region WebSocket event handlers
+    private __onWebSocketOpen = () => this.emit('websocketOpened');
 
-    private __onWebSocketOpen = () => {
-        console.log('Websocket opened');
+    private __onWebSocketClose = (code: number, reason: Buffer) => this.emit('websocketError', code, reason);
+
+    private __onWebSocketError = (error: Error) => this.emit('websocketError', error);
+
+    private __onWebSocketMessage = (data: RawData) => {
+        console.log(`Websocket Message => RawData: ${data}`);
     };
-
-    private __onWebSocketClose = (code: number, reason: Buffer) => {
-        console.log(`Websocket closed => Code: ${code} Reason: ${reason}`);
-    };
-
-    private __onWebSocketError = (error: Error) => {
-        console.log(`Websocket error: ${error}`);
-    }
-
-    private __onWebSocketMessage = (data: RawData, isBinary: boolean) => {
-        console.log(`Websocket Message => RawData: ${data} isBinary: ${isBinary}`);
-    };
-
-    //#endregion
 }
 
 export default MaxClient;
