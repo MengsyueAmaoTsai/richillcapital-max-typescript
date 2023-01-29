@@ -1,6 +1,6 @@
 {
   "name": "richillcapital-max",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MAX(Taiwan) crypto exchange API SDK for TypeSciprt.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,6 +10,7 @@
   "scripts": {
     "rest:market": "ts-node ./examples/market-data-client.ts",
     "rest:trading": "ts-node ./examples/trading-client.ts",
+    "rest": "npm run rest:market && npm run rest:trading",
     "ws:market": "ts-node ./examples/market-data-client-ws.ts",
     "ws:trading": "ts-node ./examples/trading-client-ws.ts",
     "feed": "ts-node ./examples/datafeed.ts",
