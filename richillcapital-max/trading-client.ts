@@ -274,7 +274,7 @@ class MaxTradingClient extends MaxClient {
         const result = await this._sendPrivateRequest('POST', '/api/v2/orders/multi/onebyone', parameters);
         console.log(result);
     };
-    
+
     public getInternalTransfers = async (currencyId: string, side: string = 'in', limit: number = 1000, pagenation: boolean = false): Promise<void> => {
         const parameters = {
             nonce: Date.now(),
@@ -296,6 +296,54 @@ class MaxTradingClient extends MaxClient {
         console.log(internalTransfer);
     };
 
+    public withdrawTwd = async (amount: number) => {
+        const parameters = {
+            nonce: Date.now(),
+            amount: String(amount)
+        }
+        const withdrawal = await this._sendPrivateRequest('POST', '/api/v2/withdrawal/twd', parameters);
+        console.log(withdrawal);
+    };
+
+    public getWithdraw = async (id: string) => {
+        const parameters = {
+            nonce: Date.now(),
+            uuid: id
+        }
+        const withdrawal = await this._sendPrivateRequest('GET', '/api/v2/withdrawal', parameters);
+        console.log(withdrawal);
+    };
+
+    public withdraw = async (currencyId: string, amount: number) => {
+        const parameters = {
+            nonce: Date.now(),
+            currency: currencyId,
+            amount: String(amount),
+        }   
+        const withdrawal = await this._sendPrivateRequest('POST', '/api/v2/withdrawal', parameters);
+        console.log(withdrawal);
+    };
+
+    public getWithdrawAddresses = async (limit: number = 1000) => {
+        const parameters = {
+            nonce: Date.now(),
+            limit: limit
+
+        }
+        const addresses = await this._sendPrivateRequest('GET', '/api/v2/withdraw_addresses', parameters);
+        console.log(addresses);
+    };
+
+    public getWithdrawalHistory = async (currencyId: string, limit: number = 1000): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+            limit: limit,
+            currency: currencyId,
+
+        }
+        const withdrawalHistory = await this._sendPrivateRequest('GET', '/api/v2/withdrawals', parameters);
+        console.log(withdrawalHistory);
+    };
     /**
      * Send authentication message to server.
      */
