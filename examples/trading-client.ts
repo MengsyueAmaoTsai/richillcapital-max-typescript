@@ -53,17 +53,23 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     // const trades = await client.getTradesByClientOrderId('clinetOrderId');
 
     // Place order
-    const result = await client.placeOrder('USDTTWD', 'buy', 'market', 1);
+    // const order = await client.placeOrder('USDTTWD', 'buy', 'market', 1);
     
     // Cancel order
+    // const cancelledOrder = await client.cancelOrder();
 
     // Cancel all order
-
-    // Place multi order.
+    // const cancelledOrders = await client.cancelOrdersByMarket('USDTTWD');
+    // const cancelledOrders = await client.cancelOrdersBySide('SELL');
 
     // Get all orders.
+    // const orders = await client.getOrders();
 
     // Get order by id or 
+    // const order = await client.getOrder();
+    
+    // Place multi order.
+        
 
 })();
 

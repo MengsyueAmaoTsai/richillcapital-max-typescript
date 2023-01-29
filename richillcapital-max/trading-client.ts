@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import MaxClient from "./client";
 import { MaxBalance, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
-import { AccountVipLevelInfo, Balance, Order, Profile, RestResponse, Trade } from './max-types';
+import { AccountVipLevelInfo, Balance, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
 
 interface MaxTradingClient {
     authenticate: () => void;
@@ -213,93 +213,88 @@ class MaxTradingClient extends MaxClient {
         }
     };
 
-    public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
-        const endpoint = `/api/v2/orders`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
+    public getOrders = async (market: string, state: string = 'done', limit: number = 1000): Promise<void> => {
         const parameters = {
             nonce: Date.now(),
             market: market,
             state: state,
             limit: limit,
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
+        const orders = await this._sendPrivateRequest('GET', '/api/v2/orders', parameters);
+        console.log(orders);
     };
 
-    public getOrder = async (orderId: number) => {
-        const endpoint = `/api/v2/order`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
+    public getOrder = async (orderId: number): Promise<void> => {
         const parameters = {
             nonce: Date.now(),
             id: orderId,
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
+        const order = await this._sendPrivateRequest<Order>('GET', '/api/v2/order', parameters);
+        console.log(order);
     };
 
-
-    public cancelOrder = async (market: string, side: string) => {
-        const endpoint = '/api/v2/orders/clear';
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
+    public cancelOrdersByMarket = async (market: string): Promise<void> => {
         const parameters = {
             nonce: Date.now(),
-            market: market,
-            side: side
+            market: market.toLowerCase(),
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
+        const cancelledOrders = await this._sendPrivateRequest<Order[]>('POST', '/api/v2/orders/clear', parameters);
+        console.log(cancelledOrders);
     };    
+
+    public cancelOrdersBySide = async (side: string): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+            side: side.toLowerCase()
+        }
+        const cancelledOrders = await this._sendPrivateRequest<Order[]>('POST', '/api/v2/orders/clear', parameters);
+        console.log(cancelledOrders);
+    };    
+
+    public cancelOrder = async (): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+        }
+        const cancelledOrder = await this._sendPrivateRequest<Order>('POST', '/api/v2/order/delete', parameters);
+    };
+
+    public getOrderHistory = async (limit: number = 1000): Promise<void> => {
+        const paramters = {
+            nonce: Date.now(),
+            limit: limit
+        }
+        const orders = await this._sendPrivateRequest<Order[]>('GET', '/api/v2/orders/history', paramters);
+    };
+
+    public placeMultiOrders = async (market: string): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+            market: market.toLowerCase(),
+        }
+        const result = await this._sendPrivateRequest('POST', '/api/v2/orders/multi/onebyone', parameters);
+        console.log(result);
+    };
+    
+    public getInternalTransfers = async (currencyId: string, side: string = 'in', limit: number = 1000, pagenation: boolean = false): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+            currency: currencyId,
+            limit: limit,
+            side: side,
+            pagenation: pagenation
+        };
+        const internalTransfers = await this._sendPrivateRequest<InternalTransfer[]>('GET', '/api/v2/internal_transfers', parameters);
+        console.log(internalTransfers);
+    };
+
+    public getInternalTransfer = async (id: string): Promise<void> => {
+        const parameters = {
+            nonce: Date.now(),
+            uuid: id
+        };
+        const internalTransfer = await this._sendPrivateRequest<InternalTransfer>('GET', '/api/v2/internal_transfer', parameters);
+        console.log(internalTransfer);
+    };
 
     /**
      * Send authentication message to server.

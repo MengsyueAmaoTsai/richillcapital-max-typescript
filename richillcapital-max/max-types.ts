@@ -123,3 +123,13 @@ export type Order = {
     group_id: number
 }
 
+export type InternalTransfer = {
+    uuid: number,
+    currency: string,
+    amount: string,
+    created_at: number,
+    state: string, // done
+    from_member: string,
+    to_member: string
+}
+
