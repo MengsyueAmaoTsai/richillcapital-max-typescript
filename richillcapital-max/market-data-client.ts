@@ -103,6 +103,10 @@ class MaxMarketDataClient extends MaxClient {
         });
     };
 
+    /**
+     * Overview of market data for all tickers
+     * @returns 
+     */
     public getSummary = async (): Promise<MaxMarketSummary> => {
         const summary = await this._sendPublicRequest<MarketSummary>('GET', `/api/v2/summary`);
         return {
