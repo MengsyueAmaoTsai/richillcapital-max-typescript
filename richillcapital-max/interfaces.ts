@@ -107,3 +107,7 @@ export interface MaxOrderBook {
     asks: MaxDepth[],
     bids: MaxDepth[]
 }
+
+export interface MaxTicker {
+    
+}

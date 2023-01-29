@@ -28,10 +28,11 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     //console.log(`Get market trade of ${market} Count: ${marketTrades.length}`);
     
     // Get orderbook
-    const orderBook = await client.getOrderBook(market);
-    console.log(orderBook);
+    // const orderBook = await client.getOrderBook(market);
+    // console.log(orderBook);
+    
     // Get tickers
-    // const tickers = await client.getTickers(market);
+    const tickers = await client.getTickers(market);
 
     
     // Get summary

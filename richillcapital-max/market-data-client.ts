@@ -32,14 +32,14 @@ class MaxMarketDataClient extends MaxClient {
             lastUpdateVersion: orderBook.last_update_version,
             bids: orderBook.bids.map(bid => {
                 return {
-                    price: bid[0],
-                    size: bid[1]
+                    price: Number(bid[0]),
+                    size: Number(bid[1])
                 }
             }),
             asks: orderBook.asks.map(ask => {
                 return {
-                    price: ask[0],
-                    size: ask[1]
+                    price: Number(ask[0]),
+                    size: Number(ask[1])
                 }  
             })
         }
@@ -114,7 +114,7 @@ class MaxMarketDataClient extends MaxClient {
      * @returns 
      */
     public getTickers = async (market: string): Promise<void> => {
-        const tickers = await this._sendPublicRequest('GET', `/api/v2/tickers/${market}`);
+        const tickers = await this._sendPublicRequest('GET', `/api/v2/tickers/${market.toLowerCase()}`);
         console.log(tickers);        
     };    
     //#region WebSocket APIs
