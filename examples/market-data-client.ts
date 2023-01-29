@@ -14,11 +14,9 @@ dotenv.config();
 
     // Get server time.
     const serverTime = await client.getServerTime();
-    console.log(`Server time: ${serverTime}`);
 
     // Get Markets
     const markets = await client.getMarkets();
-    console.log(`Markets of MAX: ${markets.length}`);
 
     // Get ticker
     const ticker = await client.getTickers(market);
@@ -27,20 +25,19 @@ dotenv.config();
     // Get depth.
     const depth = await client.getOrderBook(market);
     // console.log(depth);
+
+    // Get k
+    const kLines = await client.getKLines(market);
+
+    // Get market trades
+    const trades = await client.getMarketTrades(market);
+
+    // Get summary
+    const summary = await client.getSummary();
+
     // Get vip levels
 
     // Get vip level.
-
-    // Get k
-
-    // Get depth
-
-    // Get market trades
-
-    // Get summary
-
-
-
 
 
     // Get currencies
