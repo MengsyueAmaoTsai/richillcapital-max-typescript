@@ -145,7 +145,7 @@ export type MarketTrade = {
     side: string
 }
 
-export type Depth = {
+export type OrderBook = {
     timestamp: number,
     last_update_version: number,
     last_update_id: number,

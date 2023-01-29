@@ -1,6 +1,6 @@
 import MaxClient from "./client";
 import { MaxCandle, MaxDepth, MaxMarketTrade, MaxOrderBook } from "./interfaces";
-import { Depth, MarketTrade } from "./max-types";
+import { OrderBook, MarketTrade } from "./max-types";
 
 interface MaxMarketDataClient {
 
@@ -24,7 +24,7 @@ class MaxMarketDataClient extends MaxClient {
             limit: limit,
             sort_by_price: sortByPrice
         }
-        const orderBook = await this._sendPublicRequest<Depth>('GET', '/api/v2/depth', parameters);
+        const orderBook = await this._sendPublicRequest<OrderBook>('GET', '/api/v2/depth', parameters);
         return {
             market: market.toUpperCase(),
             timestamp: orderBook.timestamp,
