@@ -676,10 +676,14 @@ class MaxClient extends EventEmitter {
         return Buffer.from(text).toString('base64');
     };
 
-    private __generateSignature = (encodedPayload: string) => {
+    private __generateRestSignature = (encodedPayload: string) => {
         return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
     };
 
+    private __generateWebSocketSignature = (nonce: number): string => {
+        return crypto.createHmac('sha256', this._secretKey).update(nonce.toString()).digest('hex');
+    };
+    
     private __generateAuthHeaders = (endpoint: string, parameters: {}) => {
         const parametersToSigned = Object.assign({}, parameters, { path: endpoint });
         const encodedPayload = this.__encodeStringToBase64(JSON.stringify(parametersToSigned));
@@ -687,9 +691,11 @@ class MaxClient extends EventEmitter {
             ...this.__defaultHeaders,
             'X-MAX-ACCESSKEY': this._apiKey,
             'X-MAX-PAYLOAD': encodedPayload,
-            'X-MAX-SIGNATURE': this.__generateSignature(encodedPayload)
+            'X-MAX-SIGNATURE': this.__generateRestSignature(encodedPayload)
         };
     };
+
+
 
     //#endregion
 
@@ -836,17 +842,16 @@ class MaxClient extends EventEmitter {
     };
 
     public authenticate = (): void => {
-        const hmac = crypto.createHmac('sha256', this._secretKey);
         const nonce = Date.now()
-        const signature = hmac.update(nonce.toString()).digest('hex')
         const data = {
             action: 'auth',
             apiKey: this._apiKey,
-            signature,
-            nonce,
+            nonce: nonce,
+            signature: this.__generateWebSocketSignature(nonce),
         };
         this._websocketClient?.send(JSON.stringify(data));        
     };
+
 }
 
 export default MaxClient;
