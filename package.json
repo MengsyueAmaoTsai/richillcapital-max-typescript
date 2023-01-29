@@ -2,6 +2,27 @@
   "name": "richillcapital-max",
   "version": "1.0.5",
   "description": "MAX(Taiwan) crypto exchange API SDK for TypeSciprt.",
+  "keywords": [
+    "max",
+    "max api",
+    "maicoin api",
+    "maicoin",
+    "spot",
+    "api",
+    "websocket",
+    "rest",
+    "rest api",
+    "crypto",
+    "cryptocurrency",
+    "usdt",
+    "btc",
+    "nodejs",
+    "typescript",
+    "javascript",
+    "bitcoin",
+    "eth",
+    "richillcapital"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MengsyueAmaoTsai/richillcapital-max-typescript"
@@ -19,7 +40,7 @@
     "ws:trading": "ts-node ./examples/trading-client-ws.ts",
     "feed": "ts-node ./examples/datafeed.ts",
     "broker": "ts-node ./examples/brokerage.ts",
-    
+
     "test": "jest",
     "test:watch": "jest --watch",
     "clean": "rimraf dist",
