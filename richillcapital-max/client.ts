@@ -27,7 +27,6 @@ abstract class MaxClient extends EventEmitter {
     }
     
     public connectWebSocket = () => {
-
         this._websocketClient = new WebSocket(WEBSOCKET_URL)
             .on('open', this.__onWebSocketOpen.bind(this))
             .on('close', this.__onWebSocketClose.bind(this))
@@ -63,21 +62,41 @@ abstract class MaxClient extends EventEmitter {
         });
     };
 
-    protected _sendPublicRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => {
-        return await this.__sendRequest<T>(method, endpoint, paramters);
-    };
+    /**
+     * Send request to public endpoint.
+     * @param method 
+     * @param endpoint 
+     * @param paramters 
+     * @returns 
+     */
+    protected _sendPublicRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => await this.__sendRequest<T>(method, endpoint, paramters);
 
+    /**
+     * Send request to private endpoint.
+     * @param method 
+     * @param endpoint 
+     * @param paramters 
+     * @returns 
+     */
     protected _sendPrivateRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => {
         if (!this._apiKey || !this._secretKey) 
             return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        return await this.__sendRequest<T>(method, endpoint, paramters, this._generateAuthHeaders(endpoint, paramters));
+        return await this.__sendRequest<T>(method, endpoint, paramters, this.__buildAuthHeaders(endpoint, paramters));
     };
 
+    /**
+     * Send request to MAX exchange REST endpoint.
+     * @param method 
+     * @param endpoint 
+     * @param paramters 
+     * @param headers 
+     * @returns 
+     */
     private __sendRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
         try {
             console.log(`Send request => ${method} ${endpoint}`);
             const response = await fetch(
-                this._buildUri(endpoint, paramters),
+                this.__buildUri(endpoint, paramters),
                 {
                     method: method,
                     headers: headers ?? this._defaultHeaders
@@ -90,7 +109,13 @@ abstract class MaxClient extends EventEmitter {
         }
     };
 
-    protected _buildUri = (endpoint: string, queryParameters: {} = {}): string => {
+    /**
+     * Builds full request uri.
+     * @param endpoint 
+     * @param queryParameters 
+     * @returns 
+     */
+    private __buildUri = (endpoint: string, queryParameters: {} = {}): string => {
         let uri = `${REST_URL}${endpoint}`;
         if (Object.keys(queryParameters).length > 0) {
             uri += `?${qs.stringify(queryParameters, { arrayFormat: 'brackets' })}`
@@ -98,7 +123,13 @@ abstract class MaxClient extends EventEmitter {
         return uri;
     };
 
-    protected _generateAuthHeaders = (endpoint: string, parameters: {}) => {
+    /**
+     * Builds headers with authorization. 
+     * @param endpoint 
+     * @param parameters 
+     * @returns 
+     */
+    private __buildAuthHeaders = (endpoint: string, parameters: {}) => {
         const parametersToSigned = Object.assign({}, parameters, { path: endpoint });
         const encodedPayload = this.__encodeStringToBase64(JSON.stringify(parametersToSigned));
         return {
@@ -109,15 +140,26 @@ abstract class MaxClient extends EventEmitter {
         };
     };
 
+    /**
+     * Encodes a string to base64 string.
+     * @param text 
+     * @returns 
+     */
     private __encodeStringToBase64 = (text: string): string => {
         return Buffer.from(text).toString('base64');
     };
-
+    
+    /**
+     * Generates signature for REST endpoint.
+     * @param encodedPayload 
+     * @returns 
+     */
     private __generateRestSignature = (encodedPayload: string) => {
         return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
     };
 
     //#region WebSocket event handlers
+
     private __onWebSocketOpen = () => {
         console.log('Websocket opened');
     };
