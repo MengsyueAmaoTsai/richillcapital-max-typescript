@@ -1,6 +1,6 @@
 {
   "name": "richillcapital-max",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MAX(Taiwan) crypto exchange API SDK for TypeSciprt.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
