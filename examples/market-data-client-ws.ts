@@ -11,8 +11,60 @@ dotenv.config();
     const market = 'usdttwd';
 
     const client = new MaxClient();
+    
+    client.on('marketTradeSnapshot', () => {
+
+    });
+    
+    client.on('marketTradeUpdate', () => {
+
+    });
+
+    client.on('orderBookSnapshot', () => {
+
+    });
+    
+    client.on('orderBookUpdate', () => {
+
+    });
+
+    
+    client.on('tickerSnapshot', () => {
+
+    });
+    
+    client.on('tickerUpdate', () => {
+
+    });
+
+    
+    client.on('marketStatusSnapshot', () => {
+
+    });
+    
+    client.on('marketStatusUpdate', () => {
+
+    });
+
+    client.on('error', () => {
+
+    });
+
+    client.on('open', () => {
+
+    });
+
+
+    client.on('close', () => {
+
+    });
+
     client.connect(apiKey, secretKey);
 
     client.subscribeMarketStatus();
+    client.subscribeOrderBook(market);
+    client.subscribeTicker(market);
+    client.subscribeMarketTrade(market);
+
 })();
 
