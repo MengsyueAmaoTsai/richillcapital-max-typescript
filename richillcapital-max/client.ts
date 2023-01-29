@@ -34,7 +34,7 @@ abstract class MaxClient extends EventEmitter {
             .on('open', this.__onWebSocketOpen.bind(this))
             .on('close', this.__onWebSocketClose.bind(this))
             .on('error', this.__onWebSocketError.bind(this))
-            .on('message', this.__onWebSocketMessage.bind(this));
+            .on('message', this._onWebSocketMessage.bind(this));
     };
 
    /**
@@ -167,9 +167,7 @@ abstract class MaxClient extends EventEmitter {
 
     private __onWebSocketError = (error: Error) => this.emit('websocketError', error);
 
-    private __onWebSocketMessage = (data: RawData) => {
-        console.log(`Websocket Message => RawData: ${data}`);
-    };
+    protected abstract _onWebSocketMessage(data: RawData): void;
 }
 
 export default MaxClient;

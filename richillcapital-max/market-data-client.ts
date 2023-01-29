@@ -1,3 +1,4 @@
+import { RawData } from "ws";
 import MaxClient from "./client";
 import { MaxCandle, MaxDepth, MaxMarketSummary, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfaces";
 import { OrderBook, MarketTrade, Ticker, MarketSummary } from "./max-types";
@@ -7,7 +8,7 @@ interface MaxMarketDataClient {
 };
 
 class MaxMarketDataClient extends MaxClient {
-    
+
     public constructor(apiKey: string, secretKey: string) {
         super(apiKey, secretKey)
     }
@@ -274,6 +275,8 @@ class MaxMarketDataClient extends MaxClient {
     };    
 
     //#endregion
+
+    protected _onWebSocketMessage(data: RawData): void {}
 }
 
 

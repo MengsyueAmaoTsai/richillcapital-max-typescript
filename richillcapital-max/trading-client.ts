@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { RawData } from 'ws';
 import MaxClient from "./client";
 import { MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
 import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
@@ -360,6 +361,7 @@ class MaxTradingClient extends MaxClient {
         const withdrawalHistory = await this._sendPrivateRequest('GET', '/api/v2/withdrawals', parameters);
         console.log(withdrawalHistory);
     };
+    
     /**
      * Send authentication message to server.
      */
@@ -373,8 +375,6 @@ class MaxTradingClient extends MaxClient {
         };
         this._websocketClient?.send(JSON.stringify(data));        
     };
-
-
 
     public subscribeAccount = (): void => {
     };
@@ -400,8 +400,9 @@ class MaxTradingClient extends MaxClient {
      * @param nonce 
      * @returns 
      */
-    private __generateWebSocketSignature = (nonce: number): string => 
-        crypto.createHmac('sha256', this._secretKey).update(nonce.toString()).digest('hex');
+    private __generateWebSocketSignature = (nonce: number): string => crypto.createHmac('sha256', this._secretKey).update(nonce.toString()).digest('hex');
+    
+    protected _onWebSocketMessage(data: RawData): void {}
 };
 
 export default MaxTradingClient;
