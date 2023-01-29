@@ -2,6 +2,8 @@ import * as crypto from 'crypto';
 import EventEmitter from "events";
 import * as qs from 'qs';
 import WebSocket, { RawData } from "ws";
+import { MaxMarket } from './interfaces';
+import { Market } from './max-types';
 
 
 const REST_URL = 'https://max-api.maicoin.com';
@@ -37,55 +39,43 @@ abstract class MaxClient extends EventEmitter {
      * Get server current time, in seconds since Unix epoch
      * @returns  
      */
-    public getServerTime = async (): Promise<number> => {
-        const endpoint = '/api/v2/timestamp';
-
-        const uri = this._buildUri(endpoint);
-        console.log(`Request Uri: ${uri}`);
-
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._defaultHeaders
-            });
-            return await response.json() as number;
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return 0;
-        }   
-    };
+    public getServerTime = async (): Promise<number> => await this._sendPublicRequest<number>('GET', '/api/v2/timestamp');
 
     /**
      * Get all available markets.
      * @returns 
      */
-    public getMarkets = async (): Promise<void> => {
-        const endpoint = '/api/v2/markets';
-
-        const uri = this._buildUri(endpoint);
-        console.log(`Request Uri: ${uri}`);
-
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._defaultHeaders
-            });
-            const data = await response.json();
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }
+    public getMarkets = async (): Promise<MaxMarket[]> => {
+        const markets = await this._sendPublicRequest<Market[]>('GET', '/api/v2/markets');
+        return markets.map(item => {
+            return {
+                id: item.id.toUpperCase(),
+                name: item.name,
+                marketStatus: item.market_status, 
+                baseUnit: item.base_unit, 
+                baseUnit_precision: item.base_unit_precision,
+                minBaseAmount: item.min_base_amount,
+                quoteUnit: item.quote_unit,
+                quoteUnit_precision: item.quote_unit_precision,
+                minQuoteAmount: item.min_quote_amount,
+                mWalletSupported: item.m_wallet_supported
+            }
+        });
     };
 
     protected _sendPublicRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => {
         return await this.__sendRequest<T>(method, endpoint, paramters);
     };
 
-    protected _sendPrivateRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
+    protected _sendPrivateRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => {
+        if (!this._apiKey || !this._secretKey) 
+            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
         return await this.__sendRequest<T>(method, endpoint, paramters, this._generateAuthHeaders(endpoint, paramters));
     };
 
     private __sendRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
         try {
+            console.log(`Send request => ${method} ${endpoint}`);
             const response = await fetch(
                 this._buildUri(endpoint, paramters),
                 {

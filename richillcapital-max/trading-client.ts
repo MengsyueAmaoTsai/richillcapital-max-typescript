@@ -1,49 +1,10 @@
 import * as crypto from 'crypto';
 import MaxClient from "./client";
-
+import { MaxBalance, MaxProfile, MaxVipLevel } from './interfaces';
+import { AccountVipLevelInfo, Balance, Profile } from './max-types';
 
 interface MaxTradingClient {
     authenticate: () => void;
-};
-
-type ProfileType = {
-  sn: string,
-  name: string,
-  email: string,
-  language: string,
-  country_code: string,
-  phone_number: string,
-  status: string //'activated',
-  profile_verified: boolean,
-  kyc_state: string //'verified',
-  any_kyc_rejected: boolean,
-  agreement_checked: boolean,
-  level: number,
-  vip_level: number,
-  member_type: string // 'type_twd',
-  supplemental_document_type: string //'health_id_card',
-  avatar_url: string | null,
-  avatar_nft_ownership_sn: string | null
-}
-
-interface MaxProfile {
-  serialNumber: string,
-  name: string,
-  email: string,
-  language: string,
-  countryCode: string,
-  phoneNumber: string,
-  status: string //'activated',
-  profileVerified: boolean,
-  kycState: string //'verified',
-  anyKycRejected: boolean,
-  agreementChecked: boolean,
-  level: number,
-  vipLevel: number,
-  memberType: string // 'type_twd',
-  supplementalDocumentType: string //'health_id_card',
-  avatarUrl: string | null,
-  avatarNftOwnershipSerialNumber: string | null    
 };
 
 class MaxTradingClient extends MaxClient {
@@ -52,14 +13,24 @@ class MaxTradingClient extends MaxClient {
         super(apiKey, secretKey)
     }
 
+    /**
+     * Get your profile and accounts information
+     */
+    public getMe = async (): Promise<void> => {
+        const nonce = Date.now();
+        const me = await this._sendPrivateRequest('GET', '/api/v2/members/me', { nonce });
+        console.log(me);
+    };
+
+    /**
+     * Get personal profile information
+     * @returns 
+     */
     public getProfile = async (): Promise<MaxProfile> => {
-        const endpoint = '/api/v2/members/profile';
-        const parameters = {
-            nonce: Date.now()
-        }
-        const profile = await this._sendPrivateRequest<ProfileType>('GET', endpoint, parameters);
+        const nonce = Date.now();
+        const profile = await this._sendPrivateRequest<Profile>('GET', '/api/v2/members/profile', { nonce });
         return {
-            serialNumber: profile.sn,
+            userId: profile.sn,
             name: profile.name,
             email: profile.email,
             language: profile.language,
@@ -77,6 +48,98 @@ class MaxTradingClient extends MaxClient {
             avatarUrl: profile.avatar_url ?? '',
             avatarNftOwnershipSerialNumber: profile.avatar_nft_ownership_sn ?? '' 
         }        
+    };
+
+    /**
+     * Get current vip level info.
+     * @returns 
+     */
+    public getCurrentVipLevel = async (): Promise<MaxVipLevel> => {
+        const nonce = Date.now();
+        const levelInfo = await this._sendPrivateRequest<AccountVipLevelInfo>('GET', '/api/v2/members/vip_level', { nonce })
+        const currentLevel = levelInfo.current_vip_level
+        return {
+            level: currentLevel.level,
+            minTradingVolume: currentLevel.minimum_trading_volume,
+            minStakingVolume: currentLevel.minimum_staking_volume,
+            makerFee: currentLevel.maker_fee,
+            takerFee: currentLevel.taker_fee
+        }
+    };
+
+    /**
+     * Get personal accounts information
+     * @returns 
+     */
+    public getBalances = async (): Promise<MaxBalance[]> => {
+        const nonce = Date.now();
+        const balances = await this._sendPrivateRequest<Balance[]>('GET', '/api/v2/members/accounts', { nonce });
+        return balances.map(item => {
+            return {
+                currencyId: item.currency.toUpperCase(),
+                type: item.type,
+                balance: Number(item.balance),
+                locked: Number(item.locked),
+                stacked: Number(item.staked) ?? 0,
+            }
+        })
+    };
+
+    /**
+     * Get personal accounts information of a currency
+     * @param currencyId 
+     * @returns 
+     */
+    public getBalanceByCurrency = async (currencyId: string): Promise<MaxBalance> => {
+        const nonce = Date.now();
+        const balance = await this._sendPrivateRequest<Balance>('GET', `/api/v2/members/accounts/${currencyId.toLowerCase()}`, { nonce });
+        return {
+            currencyId: balance.currency.toUpperCase(),
+            type: balance.type,
+            balance: Number(balance.balance),
+            locked: Number(balance.locked),
+            stacked: Number(balance.staked) ?? 0,
+        }
+    };
+
+    public getTrades = async (market: string, limit: number = 1000) => {
+        const nonce = Date.now();
+        const parameters = {
+            market: market.toLowerCase(),
+            limit,
+            nonce,
+        }
+        const trades = await this._sendPrivateRequest('GET', '/api/v2/trades/my', parameters);
+        console.log(trades);
+    };
+
+    public getTradesByOrderId = async (orderId: number, clientOrderId: string) => {
+        const endpoint = `/api/v2/trades/my/of_order`;
+        
+        if (!this._apiKey || !this._secretKey) {
+            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
+        }
+
+        const parameters = {
+            nonce: Date.now(),
+            id: orderId,
+            client_oid: clientOrderId,
+        }
+
+        const uri = this._buildUri(endpoint, parameters);
+        console.log(`Request Uri: ${uri}`);
+        
+        try {
+            const response = await fetch(uri, {
+                method: 'GET',
+                headers: this._generateAuthHeaders(endpoint, parameters)
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log(`Error when send request to ${uri} Error: ${error}`);
+            return;
+        }               
     };
 
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
@@ -119,64 +182,6 @@ class MaxTradingClient extends MaxClient {
         const parameters = {
             nonce: Date.now(),
             id: orderId,
-        }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
-    };
-
-    public getTrades = async (market: string, limit: number = 1000) => {
-        const endpoint = `/api/v2/trades/my`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
-        const parameters = {
-            nonce: Date.now(),
-            market: market,
-            limit: limit,
-        }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
-    };
-
-    public getTradesByOrderId = async (orderId: number, clientOrderId: string) => {
-        const endpoint = `/api/v2/trades/my/of_order`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
-        const parameters = {
-            nonce: Date.now(),
-            id: orderId,
-            client_oid: clientOrderId,
         }
 
         const uri = this._buildUri(endpoint, parameters);
