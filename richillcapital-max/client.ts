@@ -75,34 +75,26 @@ abstract class MaxClient extends EventEmitter {
         }
     };
 
-    /**
-     * Get all available currencies.
-     * @returns 
-     */
-    public getCurrencies = async (): Promise<void> => 
-        await this._sendPublicRequest('GET', '/api/v2/currencies');
+    protected _sendPublicRequest = async <T>(method: string, endpoint: string, paramters: {} = {}): Promise<T> => {
+        return await this.__sendRequest<T>(method, endpoint, paramters);
+    };
 
-    protected _sendPublicRequest = async <T>(method: string, endpoint: string, parameters: {} = {}): Promise<T> => 
-        await this.__sendRequest<T>(method, endpoint, this._defaultHeaders, parameters);
+    protected _sendPrivateRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
+        return await this.__sendRequest<T>(method, endpoint, paramters, this._generateAuthHeaders(endpoint, paramters));
+    };
 
-    protected _sendPrivateRequest = async <T>(method: string, endpoint: string, parameters: {} = {}): Promise<T> => 
-        await this.__sendRequest<T>(method, endpoint, this._generateAuthHeaders(endpoint, parameters), parameters);
-
-    private __sendRequest = async <T>(method: string, endpoint: string, headers: {} = {}, parameters: {} = {}): Promise<T> => {
-        const uri = this._buildUri(endpoint, parameters);
-        console.info(`Send request => ${method} ${uri}`);
-        
+    private __sendRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
         try {
             const response = await fetch(
-                uri,
+                this._buildUri(endpoint, paramters),
                 {
                     method: method,
-                    headers: headers
+                    headers: headers ?? this._defaultHeaders
                 }
             );
-            return await response.json() as T;
+            return await response.json() as T; 
         } catch (error) {
-            throw new Error(`Error when send request to MAX exchange => ${uri} ${error}`);
+            throw new Error(`Error on send request => ${endpoint} ${error}`);
         }
     };
 

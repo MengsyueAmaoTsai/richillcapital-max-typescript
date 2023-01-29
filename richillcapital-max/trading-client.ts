@@ -13,6 +13,15 @@ class MaxTradingClient extends MaxClient {
         super(apiKey, secretKey)
     }
 
+    public getProfile = async () => {
+        const endpoint = '/api/v2/members/profile';
+        const parameters = {
+            nonce: Date.now()
+        }
+        const profile = await this._sendPrivateRequest('GET', endpoint, parameters);
+        console.log(profile);
+    };
+
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
         const endpoint = `/api/v2/orders`;
         
