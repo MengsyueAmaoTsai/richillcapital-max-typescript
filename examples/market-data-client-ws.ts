@@ -1,4 +1,4 @@
-import MaxClient from '../richillcapital-max';
+import MaxMarketDataClient from '../richillcapital-max/market-data-client';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -10,7 +10,7 @@ dotenv.config();
     // Market name for example
     const market = 'usdttwd';
 
-    const client = new MaxClient();
+    const client = new MaxMarketDataClient();
     
     client.on('marketTradeSnapshot', () => {
 

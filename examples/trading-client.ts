@@ -1,5 +1,5 @@
-import MaxClient from '../richillcapital-max';
 import * as dotenv from 'dotenv';
+import MaxTradingClient from '../richillcapital-max/trading-client';
 
 dotenv.config();
 
@@ -10,8 +10,8 @@ dotenv.config();
     // Market name for example
     const market = 'usdttwd';
 
-    const client = new MaxClient();
-    client.connect(apiKey, secretKey);
+    const client = new MaxTradingClient();
+    client.connectWebSocket(apiKey, secretKey);
 
     // Get server time.
     // const serverTime = await client.getServerTime();

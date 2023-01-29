@@ -1,8 +1,6 @@
-
-
-
-import MaxClient from '../richillcapital-max';
 import * as dotenv from 'dotenv';
+import MaxTradingClient from '../richillcapital-max/trading-client';
+
 
 dotenv.config();
 
@@ -13,7 +11,7 @@ dotenv.config();
     // Market name for example
     const market = 'usdttwd';
 
-    const client = new MaxClient();
+    const client = new MaxTradingClient();
     
     client.on('tradeSnapshot', () => {
         console.log('Trade Snapshort => ');
@@ -49,7 +47,7 @@ dotenv.config();
     client.on('close', () => {
     });
 
-    client.connect(apiKey, secretKey);
+    client.connectWebSocket(apiKey, secretKey);
     client.subscribeMarketStatus();
     client.subscribeOrderBook(market);
     client.subscribeTicker(market);

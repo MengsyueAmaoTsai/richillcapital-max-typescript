@@ -1,5 +1,5 @@
-import MaxClient from '../richillcapital-max';
 import * as dotenv from 'dotenv';
+import MaxMarketDataClient from '../richillcapital-max/market-data-client';
 
 dotenv.config();
 
@@ -10,24 +10,42 @@ dotenv.config();
     // Market name for example
     const market = 'usdttwd';
 
-    const client = new MaxClient();
-    client.connect(apiKey, secretKey);
+    const client = new MaxMarketDataClient();
 
     // Get server time.
-    // const serverTime = await client.getServerTime();
-    // console.log(`Server time: ${serverTime}`);
+    const serverTime = await client.getServerTime();
+    console.log(`Server time: ${serverTime}`);
 
     // Get Markets
-    // const markets = await client.getMarkets();
-    // console.log(`Markets of MAX: ${markets.length}`);
+    const markets = await client.getMarkets();
+    console.log(`Markets of MAX: ${markets.length}`);
+
+    // Get ticker
+    const ticker = await client.getTickers(market);
+    // console.log(ticker);
+
+    // Get depth.
+    const depth = await client.getOrderBook(market);
+    // console.log(depth);
+    // Get vip levels
+
+    // Get vip level.
+
+    // Get k
+
+    // Get depth
+
+    // Get market trades
+
+    // Get summary
+
+
+
+
 
     // Get currencies
     // const currencies = await client.getCurrencies();
     // console.log(`Currencies of MAX: ${currencies.length}`);
-
-    // Get tickers of all market
-    // const ticker = await client.getTickers(market);
-    // console.log(ticker);
 
     // Get me.
     // const me = await client.getMe();
@@ -62,13 +80,5 @@ dotenv.config();
 
     // Get trades
     // const trades = await client.getTrades(market);
-
-
-
-
-
-
-
-
 })();
 
