@@ -17,97 +17,39 @@ class MaxMarketDataClient extends MaxClient {
      * @param sortByPrice 
      */
     public getOrderBook = async (market: string, limit: number = 300, sortByPrice: boolean = false): Promise<void> => {
-        const endpoint = '/api/v2/depth';
         const parameters = {
-            market: market,
+            market: market.toLowerCase(),
             limit: limit,
             sort_by_price: sortByPrice
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-
-        try {
-            const response = await fetch(
-                uri,
-                {
-                    method: 'GET',
-                    headers: this._defaultHeaders
-                }
-            );
-
-            const data = await response.json();
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }
+        const orderBook = await this._sendPublicRequest('GET', '/api/v2/depth', parameters);
+        console.log(orderBook);
     };
 
     public getKLines = async (market: string, period: number = 1, limit: number = 100, timestamp?: number): Promise<void> => {
-        const endpoint = '/api/v2/k';
         const parameters = {
-            market: market,
+            market: market.toLowerCase(),
             period: period,
             limit: limit,
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        
-        try {
-            const response = await fetch(
-                uri,
-                {
-                    method: 'GET',
-                    headers: this._defaultHeaders
-                }
-            );
-            const data = await response.json();
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }
+        const kLines = await this._sendPublicRequest('GET', '/api/v2/k', parameters);
+        console.log(kLines);
     };
 
     public getMarketTrades = async (market: string, limit: number = 1000, orderBy: string = 'desc', pagenation: boolean = false) => {
-        const endpoint = '/api/v2/trades';
         const parameters = {
-            market: market,
+            market: market.toLowerCase(),
             limit: limit,
-            orderBy: orderBy,
+            orderBy: orderBy.toLowerCase(),
             pagenation: pagenation,
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        
-        try {
-            const response = await fetch(
-                uri,
-                {
-                    method: 'GET',
-                    headers: this._defaultHeaders
-                }
-            );
-            const data = await response.json();
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }        
+        const marketTrades = await this._sendPublicRequest('GET', '/api/v2/trades', parameters);
+        console.log(marketTrades);
     };
 
     public getSummary = async (): Promise<void> => {
-        const endpoint = '/api/v2/summary';
-
-        const uri = this._buildUri(endpoint);
-        
-        try {
-            const response = await fetch(
-                uri,
-                {
-                    method: 'GET',
-                    headers: this._defaultHeaders
-                }
-            );
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }        
+        const summary = await this._sendPublicRequest('GET', `/api/v2/summary`);
+        console.log(summary);
     };
 
     /**
@@ -116,22 +58,9 @@ class MaxMarketDataClient extends MaxClient {
      * @returns 
      */
     public getTickers = async (market: string): Promise<void> => {
-        const endpoint = `/api/v2/tickers/${market}`;
-
-        const uri = this._buildUri(endpoint);
-        console.log(`Request Uri: ${uri}`);
-
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._defaultHeaders
-            });
-            const data = await response.json();
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }   
+        const tickers = await this._sendPublicRequest('GET', `/api/v2/tickers/${market}`);
+        console.log(tickers);        
     };    
-
     //#region WebSocket APIs
     
     public subscribeMarketTrade = (market: string) => {
