@@ -1,8 +1,8 @@
-import { createHmac } from "crypto";
 import * as crypto from 'crypto';
 import EventEmitter from "events";
 import * as qs from 'qs';
 import WebSocket, { RawData } from "ws";
+
 
 const REST_URL = 'https://max-api.maicoin.com';
 const WEBSOCKET_URL = 'wss://max-stream.maicoin.com/ws';
@@ -11,7 +11,8 @@ abstract class MaxClient extends EventEmitter {
     
     protected _websocketClient?: WebSocket;
     protected _defaultHeaders = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': `RichillCapital-TypeScript/`
     }
 
     protected _apiKey: string = '';
@@ -92,7 +93,8 @@ abstract class MaxClient extends EventEmitter {
                     headers: headers ?? this._defaultHeaders
                 }
             );
-            return await response.json() as T; 
+            return await response.json();
+
         } catch (error) {
             throw new Error(`Error on send request => ${endpoint} ${error}`);
         }

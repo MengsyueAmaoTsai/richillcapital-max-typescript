@@ -1,10 +1,49 @@
 import * as crypto from 'crypto';
-
 import MaxClient from "./client";
 
 
 interface MaxTradingClient {
     authenticate: () => void;
+};
+
+type ProfileType = {
+  sn: string,
+  name: string,
+  email: string,
+  language: string,
+  country_code: string,
+  phone_number: string,
+  status: string //'activated',
+  profile_verified: boolean,
+  kyc_state: string //'verified',
+  any_kyc_rejected: boolean,
+  agreement_checked: boolean,
+  level: number,
+  vip_level: number,
+  member_type: string // 'type_twd',
+  supplemental_document_type: string //'health_id_card',
+  avatar_url: string | null,
+  avatar_nft_ownership_sn: string | null
+}
+
+interface MaxProfile {
+  serialNumber: string,
+  name: string,
+  email: string,
+  language: string,
+  countryCode: string,
+  phoneNumber: string,
+  status: string //'activated',
+  profileVerified: boolean,
+  kycState: string //'verified',
+  anyKycRejected: boolean,
+  agreementChecked: boolean,
+  level: number,
+  vipLevel: number,
+  memberType: string // 'type_twd',
+  supplementalDocumentType: string //'health_id_card',
+  avatarUrl: string | null,
+  avatarNftOwnershipSerialNumber: string | null    
 };
 
 class MaxTradingClient extends MaxClient {
@@ -13,13 +52,31 @@ class MaxTradingClient extends MaxClient {
         super(apiKey, secretKey)
     }
 
-    public getProfile = async () => {
+    public getProfile = async (): Promise<MaxProfile> => {
         const endpoint = '/api/v2/members/profile';
         const parameters = {
             nonce: Date.now()
         }
-        const profile = await this._sendPrivateRequest('GET', endpoint, parameters);
-        console.log(profile);
+        const profile = await this._sendPrivateRequest<ProfileType>('GET', endpoint, parameters);
+        return {
+            serialNumber: profile.sn,
+            name: profile.name,
+            email: profile.email,
+            language: profile.language,
+            countryCode: profile.country_code,
+            phoneNumber: profile.phone_number,
+            status: profile.status,
+            profileVerified: profile.profile_verified,
+            kycState: profile.kyc_state, 
+            anyKycRejected: profile.any_kyc_rejected,
+            agreementChecked: profile.agreement_checked,
+            level: profile.level,
+            vipLevel: profile.vip_level,
+            memberType: profile.member_type, 
+            supplementalDocumentType: profile.supplemental_document_type,
+            avatarUrl: profile.avatar_url ?? '',
+            avatarNftOwnershipSerialNumber: profile.avatar_nft_ownership_sn ?? '' 
+        }        
     };
 
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
