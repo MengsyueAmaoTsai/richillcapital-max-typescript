@@ -682,6 +682,21 @@ class MaxClient {
     };
 
     //#endregion
+
+    //#region WebSocket event handlers
+    private __onWebSocketOpen = () => {
+    };
+
+    private __onWebSocketClose = () => {
+    };
+
+    private __onWebSocketError = () => {
+    }
+
+    private __onWebSocketMessage = () => {
+    };
+
+    //#endregion
 }
 
 export default MaxClient;
