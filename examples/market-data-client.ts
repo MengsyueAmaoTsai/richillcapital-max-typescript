@@ -11,7 +11,7 @@ dotenv.config();
     const market = 'usdttwd';
 
     const client = new MaxMarketDataClient();
-
+    
     // Get server time.
     const serverTime = await client.getServerTime();
 
@@ -41,7 +41,7 @@ dotenv.config();
 
 
     // Get currencies
-    // const currencies = await client.getCurrencies();
+    const currencies = await client.getCurrencies();
     // console.log(`Currencies of MAX: ${currencies.length}`);
 
     // Get me.

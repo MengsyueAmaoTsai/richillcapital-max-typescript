@@ -58,13 +58,5 @@ dotenv.config();
     client.on('close', () => {
 
     });
-
-    client.connect(apiKey, secretKey);
-
-    client.subscribeMarketStatus();
-    client.subscribeOrderBook(market);
-    client.subscribeTicker(market);
-    client.subscribeMarketTrade(market);
-
 })();
 

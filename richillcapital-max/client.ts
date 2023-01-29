@@ -1,7 +1,6 @@
 import { createHmac } from "crypto";
 import * as crypto from 'crypto';
 import EventEmitter from "events";
-
 import * as qs from 'qs';
 import WebSocket, { RawData } from "ws";
 
@@ -32,7 +31,7 @@ abstract class MaxClient extends EventEmitter {
             .on('error', this.__onWebSocketError.bind(this))
             .on('message', this.__onWebSocketMessage.bind(this));
     };
-    
+
    /**
      * Get server current time, in seconds since Unix epoch
      * @returns  
@@ -80,39 +79,39 @@ abstract class MaxClient extends EventEmitter {
      * Get all available currencies.
      * @returns 
      */
-    public getCurrencies = async (): Promise<void> => {
-        const endpoint = '/api/v2/currencies';
+    public getCurrencies = async (): Promise<void> => 
+        await this._sendPublicRequest('GET', '/api/v2/currencies');
 
-        const uri = this._buildUri(endpoint);
-        console.log(`Request Uri: ${uri}`);
+    protected _sendPublicRequest = async <T>(method: string, endpoint: string, parameters: {} = {}): Promise<T> => 
+        await this.__sendRequest<T>(method, endpoint, this._defaultHeaders, parameters);
 
+    protected _sendPrivateRequest = async <T>(method: string, endpoint: string, parameters: {} = {}): Promise<T> => 
+        await this.__sendRequest<T>(method, endpoint, this._generateAuthHeaders(endpoint, parameters), parameters);
+
+    private __sendRequest = async <T>(method: string, endpoint: string, headers: {} = {}, parameters: {} = {}): Promise<T> => {
+        const uri = this._buildUri(endpoint, parameters);
+        console.info(`Send request => ${method} ${uri}`);
+        
         try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._defaultHeaders
-            });
-            const data = await response.json();
+            const response = await fetch(
+                uri,
+                {
+                    method: method,
+                    headers: headers
+                }
+            );
+            return await response.json() as T;
         } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-        }        
+            throw new Error(`Error when send request to MAX exchange => ${uri} ${error}`);
+        }
     };
 
- 
-    //#region Helpers
     protected _buildUri = (endpoint: string, queryParameters: {} = {}): string => {
         let uri = `${REST_URL}${endpoint}`;
         if (Object.keys(queryParameters).length > 0) {
             uri += `?${qs.stringify(queryParameters, { arrayFormat: 'brackets' })}`
         }
         return uri;
-    };
-
-    private __encodeStringToBase64 = (text: string): string => {
-        return Buffer.from(text).toString('base64');
-    };
-
-    private __generateRestSignature = (encodedPayload: string) => {
-        return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
     };
 
     protected _generateAuthHeaders = (endpoint: string, parameters: {}) => {
@@ -126,7 +125,13 @@ abstract class MaxClient extends EventEmitter {
         };
     };
 
-    //#endregion
+    private __encodeStringToBase64 = (text: string): string => {
+        return Buffer.from(text).toString('base64');
+    };
+
+    private __generateRestSignature = (encodedPayload: string) => {
+        return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
+    };
 
     //#region WebSocket event handlers
     private __onWebSocketOpen = () => {
