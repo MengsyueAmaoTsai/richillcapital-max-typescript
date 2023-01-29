@@ -37,5 +37,7 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     
     // Get summary
     const summary = await client.getSummary();
+    console.log(summary.tickers);
+    console.log(summary.coins);
 })();
 

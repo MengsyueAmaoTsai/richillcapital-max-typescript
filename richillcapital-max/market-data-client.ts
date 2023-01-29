@@ -1,6 +1,6 @@
 import MaxClient from "./client";
-import { MaxCandle, MaxDepth, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfaces";
-import { OrderBook, MarketTrade, Ticker } from "./max-types";
+import { MaxCandle, MaxDepth, MaxMarketSummary, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfaces";
+import { OrderBook, MarketTrade, Ticker, MarketSummary } from "./max-types";
 
 interface MaxMarketDataClient {
 
@@ -103,8 +103,35 @@ class MaxMarketDataClient extends MaxClient {
         });
     };
 
-    public getSummary = async (): Promise<void> => {
-        const summary: { tickers: object, coins: object} = await this._sendPublicRequest('GET', `/api/v2/summary`);
+    public getSummary = async (): Promise<MaxMarketSummary> => {
+        const summary = await this._sendPublicRequest<MarketSummary>('GET', `/api/v2/summary`);
+        return {
+            coins: Object.keys(summary.coins).map(key => {
+                const coin = summary.coins[key]
+                return {
+                    id: key.toUpperCase(),
+                    name: coin.name,
+                    withdraw: coin.withdraw,
+                    deposit: coin.deposit,
+                    trade: coin.trade
+                }
+            }),
+            tickers: Object.keys(summary.tickers).map(key => {
+                const ticker = summary.tickers[key]
+                return {
+                    market: key.toUpperCase(),
+                    timestamp: ticker.at,
+                    bid: Number(ticker.buy),
+                    ask: Number(ticker.sell),
+                    last: Number(ticker.last),
+                    open: Number(ticker.open),
+                    high: Number(ticker.high),
+                    low: Number(ticker.low),
+                    volume: Number(ticker.vol ?? '0'),
+                    volumeInBtc: Number(ticker.vol_in_btc ?? '0')
+                }
+            })
+        }
     };
 
     /**

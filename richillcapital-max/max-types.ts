@@ -165,15 +165,30 @@ export type Ticker = {
     vol_in_btc: string
 }
 
-export type MarketSummary = {
-    tickers: object,
-    coins: object
-}
-
 export type Currency = {
     id: string,
     precision: number,
     sygna_supported: boolean,
     m_wallet_supported: boolean,
     min_borrow_amount: string
+}
+
+export type Coins = {
+    [key: string]: Coin
+}
+
+export type Coin = {
+    name: string;
+    withdraw: 'ON' | 'OFF';
+    deposit: 'ON' | 'OFF';
+    trade: 'ON' | 'OFF';
+}
+
+export type Tickers = {
+    [key: string]: Ticker
+}
+
+export type MarketSummary = {
+    tickers: Tickers, 
+    coins: Coins
 }

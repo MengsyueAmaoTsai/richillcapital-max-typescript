@@ -128,3 +128,16 @@ export interface MaxCurrency {
     mWalletSupported: boolean,
     minBorrowAmount: number
 }
+
+export interface MaxCoin {
+    id: string,
+    name: string,
+    withdraw: 'ON' | 'OFF';
+    deposit: 'ON' | 'OFF';
+    trade: 'ON' | 'OFF';
+}
+
+export interface MaxMarketSummary {
+    tickers: MaxTicker[],
+    coins: MaxCoin[]
+}
