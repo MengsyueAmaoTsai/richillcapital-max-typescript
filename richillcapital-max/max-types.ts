@@ -152,3 +152,15 @@ export type OrderBook = {
     asks: Array<number>[],
     bids: Array<number>[]
 }
+
+export type Ticker = {
+    timestamp: number,
+    buy: string,
+    sell: string,
+    open: string,
+    high: string,
+    low: string,
+    last: string,
+    vol: string,
+    vol_in_btc: string
+}

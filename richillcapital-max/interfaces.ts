@@ -109,5 +109,13 @@ export interface MaxOrderBook {
 }
 
 export interface MaxTicker {
-    
+    timestamp: number,
+    bid: number,
+    ask: number,
+    last: number,
+    open: number,
+    high: number,
+    low: number,
+    volume: number,
+    volumeInBtc: number
 }
