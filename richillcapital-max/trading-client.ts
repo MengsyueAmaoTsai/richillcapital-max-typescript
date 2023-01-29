@@ -131,36 +131,65 @@ class MaxTradingClient extends MaxClient {
                 createdAt: t.created_at,
                 createdAtMS: t.created_at_in_ms
             }
-        })
+        });
     };
 
-    public getTradesByOrderId = async (orderId: number, clientOrderId: string) => {
-        const endpoint = `/api/v2/trades/my/of_order`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
+    /**
+     * Get your executed trades related to a order
+     * @param orderId 
+     * @returns 
+     */
+    public getTradesByOrderId = async (orderId: number): Promise<MaxTrade[]> => {
         const parameters = {
             nonce: Date.now(),
             id: orderId,
+        }
+        const trades = await this._sendPrivateRequest<Trade[]>('GET', '/api/v2/trades/my/of_order', parameters);
+        return trades.map(t => {
+            return {
+                orderId: t.order_id,
+                id: t.id,
+                price: Number(t.price),
+                tradeVolume: Number(t.funds),
+                quantity: Number(t.volume),
+                market: t.market.toUpperCase(),
+                marketName: t.market_name,
+                side: t.side,
+                fee: Number(t.fee),
+                feeCurrency: t.fee_currency,
+                createdAt: t.created_at,
+                createdAtMS: t.created_at_in_ms
+            }
+        });
+    };
+
+    /**
+     * Get your executed trades related to a order
+     * @param clientOrderId 
+     * @returns 
+     */
+    public getTradesByClientOrderId = async (clientOrderId: string): Promise<MaxTrade[]> => {
+        const parameters = {
+            nonce: Date.now(),
             client_oid: clientOrderId,
         }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
+        const trades = await this._sendPrivateRequest<Trade[]>('GET', '/api/v2/trades/my/of_order', parameters);
+        return trades.map(t => {
+            return {
+                orderId: t.order_id,
+                id: t.id,
+                price: Number(t.price),
+                tradeVolume: Number(t.funds),
+                quantity: Number(t.volume),
+                market: t.market.toUpperCase(),
+                marketName: t.market_name,
+                side: t.side,
+                fee: Number(t.fee),
+                feeCurrency: t.fee_currency,
+                createdAt: t.created_at,
+                createdAtMS: t.created_at_in_ms
+            }
+        });
     };
 
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {

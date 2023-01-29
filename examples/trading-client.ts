@@ -41,7 +41,17 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     // console.log(balance);
 
     // Get trades
-    const trades = await client.getTrades('usdttwd');
-    console.log(`Trades: ${trades.length}`)
+    // const trades = await client.getTrades('usdttwd');
+    // console.log(`Trades: ${trades.length}`)
+
+    // Get trades by order id.
+    // const orderId = 231241444;
+    // const trades = await client.getTradesByOrderId(orderId);
+
+    // Get trade by client order id
+    // const clientOrderId = 'OID-0213';
+    // const trades = await client.getTradesByClientOrderId('clinetOrderId');
+
+    
 })();
 
