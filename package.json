@@ -12,6 +12,8 @@
     "rest:trading": "ts-node ./examples/trading-client.ts",
     "ws:market": "ts-node ./examples/market-data-client-ws.ts",
     "ws:trading": "ts-node ./examples/trading-client-ws.ts",
+    "feed": "ts-node ./examples/datafeed.ts",
+    "broker": "ts-node ./examples/brokerage.ts",
 
     "test": "jest",
     "test:watch": "jest --watch",
