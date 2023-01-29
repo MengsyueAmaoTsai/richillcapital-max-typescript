@@ -52,6 +52,18 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     // const clientOrderId = 'OID-0213';
     // const trades = await client.getTradesByClientOrderId('clinetOrderId');
 
+    // Place order
+    const result = await client.placeOrder('USDTTWD', 'buy', 'market', 1);
     
+    // Cancel order
+
+    // Cancel all order
+
+    // Place multi order.
+
+    // Get all orders.
+
+    // Get order by id or 
+
 })();
 

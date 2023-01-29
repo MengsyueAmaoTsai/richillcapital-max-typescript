@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import MaxClient from "./client";
 import { MaxBalance, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
-import { AccountVipLevelInfo, Balance, Profile, Trade } from './max-types';
+import { AccountVipLevelInfo, Balance, Order, Profile, RestResponse, Trade } from './max-types';
 
 interface MaxTradingClient {
     authenticate: () => void;
@@ -192,6 +192,27 @@ class MaxTradingClient extends MaxClient {
         });
     };
 
+    /**
+     * Create a order.
+     * @param market 
+     * @param side 
+     * @param orderType 
+     * @param quantity 
+     * @returns 
+     */
+    public placeOrder = async (market: string, side: string, orderType: string, quantity: number): Promise<any> => {
+        const parameters = {
+            nonce: Date.now(),
+            market: market.toLowerCase(),
+            side: side.toLowerCase(),
+            ord_type: orderType.toLowerCase(),
+            volume: String(quantity)
+        }
+        const result = await this._sendPrivateRequest<Order | RestResponse>('POST', '/api/v2/orders', parameters);
+        return {
+        }
+    };
+
     public getOrders = async (market: string, state: string = 'done', limit: number = 1000) => {
         const endpoint = `/api/v2/orders`;
         
@@ -250,35 +271,6 @@ class MaxTradingClient extends MaxClient {
         }               
     };
 
-    public placeOrder = async (market: string, side: string, orderType: string) => {
-        const endpoint = `/api/v2/orders`;
-        
-        if (!this._apiKey || !this._secretKey) {
-            return Promise.reject(new Error("Missing API KEY or SECRET KEY"));
-        }
-
-        const parameters = {
-            nonce: Date.now(),
-            market: market,
-            side: side,
-            ord_type: orderType,
-        }
-
-        const uri = this._buildUri(endpoint, parameters);
-        console.log(`Request Uri: ${uri}`);
-        
-        try {
-            const response = await fetch(uri, {
-                method: 'GET',
-                headers: this._generateAuthHeaders(endpoint, parameters)
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.log(`Error when send request to ${uri} Error: ${error}`);
-            return;
-        }               
-    };
 
     public cancelOrder = async (market: string, side: string) => {
         const endpoint = '/api/v2/orders/clear';

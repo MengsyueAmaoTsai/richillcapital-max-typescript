@@ -1,3 +1,10 @@
+export type RestResponse = {
+    success: boolean,
+    error: {
+        code: number,
+        message: string
+    }
+}
 
 export type Profile = {
   sn: string,
@@ -93,5 +100,26 @@ export type Trade = {
         ask: Fee | null, 
         bid: Fee | null 
     }
+}
+
+export type Order = {
+    id: number,
+    client_oid: string,
+    side: string,
+    ord_type: string,
+    price: string,
+    stop_price: string,
+    avg_price: string,
+    state: string,
+    market: string,
+    create_at: number,
+    create_at_in_ms: number,
+    updated_at: number,
+    updated_at_in_ms: number,
+    volume: string,
+    remaning_volume: string,
+    excuted_volume: string,
+    trades_count: number,
+    group_id: number
 }
 

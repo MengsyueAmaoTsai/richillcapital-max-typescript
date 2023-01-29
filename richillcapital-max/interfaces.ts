@@ -66,3 +66,8 @@ export interface MaxTrade {
     //     bid: Fee | null 
     // }    
 };
+
+export interface MaxOrder {
+    id: string,
+    clientOrderId: string,
+}
