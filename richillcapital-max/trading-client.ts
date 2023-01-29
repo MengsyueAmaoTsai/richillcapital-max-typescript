@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import MaxClient from "./client";
-import { MaxBalance, MaxProfile, MaxVipLevel } from './interfaces';
-import { AccountVipLevelInfo, Balance, Profile } from './max-types';
+import { MaxBalance, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
+import { AccountVipLevelInfo, Balance, Profile, Trade } from './max-types';
 
 interface MaxTradingClient {
     authenticate: () => void;
@@ -102,15 +102,36 @@ class MaxTradingClient extends MaxClient {
         }
     };
 
-    public getTrades = async (market: string, limit: number = 1000) => {
+    /**
+     * Get your executed trades, sorted in reverse creation order.
+     * @param market 
+     * @param limit 
+     * @returns 
+     */
+    public getTrades = async (market: string, limit: number = 1000): Promise<MaxTrade[]> => {
         const nonce = Date.now();
         const parameters = {
             market: market.toLowerCase(),
             limit,
             nonce,
         }
-        const trades = await this._sendPrivateRequest('GET', '/api/v2/trades/my', parameters);
-        console.log(trades);
+        const trades = await this._sendPrivateRequest<Trade[]>('GET', '/api/v2/trades/my', parameters);
+        return trades.map(t => {
+            return {
+                orderId: t.order_id,
+                id: t.id,
+                price: Number(t.price),
+                tradeVolume: Number(t.funds),
+                quantity: Number(t.volume),
+                market: t.market.toUpperCase(),
+                marketName: t.market_name,
+                side: t.side,
+                fee: Number(t.fee),
+                feeCurrency: t.fee_currency,
+                createdAt: t.created_at,
+                createdAtMS: t.created_at_in_ms
+            }
+        })
     };
 
     public getTradesByOrderId = async (orderId: number, clientOrderId: string) => {

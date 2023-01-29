@@ -46,3 +46,23 @@ export interface MaxMarket {
     minQuoteAmount: number;
     mWalletSupported: boolean;
 };
+
+export interface MaxTrade {
+    id: number,
+    price: number,
+    quantity: number,
+    tradeVolume: number,
+    market: string,
+    marketName: string,
+    createdAt: number,
+    createdAtMS: number,
+    side: string, // ask / bid
+    fee: number,
+    feeCurrency: string, // twd
+    orderId: number,
+    // info: { 
+    //     maker: string, 
+    //     ask: Fee | null, 
+    //     bid: Fee | null 
+    // }    
+};

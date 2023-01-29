@@ -42,5 +42,6 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
 
     // Get trades
     const trades = await client.getTrades('usdttwd');
+    console.log(`Trades: ${trades.length}`)
 })();
 

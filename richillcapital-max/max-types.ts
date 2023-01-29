@@ -69,4 +69,29 @@ export type Market = {
     m_wallet_supported: boolean
 };
 
+export type Fee = {
+    fee: string,
+    fee_currency: string,
+    order_id: number,
+}
+
+export type Trade = {
+    id: number,
+    price: string,
+    volume: string,
+    funds: string,
+    market: string,
+    market_name: string,
+    created_at: number,
+    created_at_in_ms: number,
+    side: string, // ask / bid
+    fee: string,
+    fee_currency: string, // twd
+    order_id: number,
+    info: { 
+        maker: string, 
+        ask: Fee | null, 
+        bid: Fee | null 
+    }
+}
 
