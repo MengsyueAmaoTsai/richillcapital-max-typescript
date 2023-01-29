@@ -9,6 +9,9 @@ import { Market } from './max-types';
 const REST_URL = 'https://max-api.maicoin.com';
 const WEBSOCKET_URL = 'wss://max-stream.maicoin.com/ws';
 
+interface MaxClient {
+}
+
 abstract class MaxClient extends EventEmitter {
     
     protected _websocketClient?: WebSocket;
