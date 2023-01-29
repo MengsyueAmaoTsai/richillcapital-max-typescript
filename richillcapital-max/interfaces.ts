@@ -120,3 +120,11 @@ export interface MaxTicker {
     volume: number,
     volumeInBtc: number
 }
+
+export interface MaxCurrency {
+    id: string,
+    precision: number,
+    sygnaSupported: boolean,
+    mWalletSupported: boolean,
+    minBorrowAmount: number
+}

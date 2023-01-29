@@ -104,8 +104,7 @@ class MaxMarketDataClient extends MaxClient {
     };
 
     public getSummary = async (): Promise<void> => {
-        const summary = await this._sendPublicRequest('GET', `/api/v2/summary`);
-        console.log(summary);
+        const summary: { tickers: object, coins: object} = await this._sendPublicRequest('GET', `/api/v2/summary`);
     };
 
     /**

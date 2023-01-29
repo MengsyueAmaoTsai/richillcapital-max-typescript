@@ -32,10 +32,10 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     // console.log(orderBook);
     
     // Get tickers
-    const tickers = await client.getTicker(market);
-
+    // const ticker = await client.getTicker(market);
+    // console.log(ticker);
     
     // Get summary
-    // const summary = await client.getSummary();
+    const summary = await client.getSummary();
 })();
 

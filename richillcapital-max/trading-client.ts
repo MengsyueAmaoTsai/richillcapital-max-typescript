@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import MaxClient from "./client";
-import { MaxBalance, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
-import { AccountVipLevelInfo, Balance, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
+import { MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
+import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
 
 interface MaxTradingClient {
     authenticate: () => void;
@@ -11,6 +11,22 @@ class MaxTradingClient extends MaxClient {
 
     public constructor(apiKey: string, secretKey: string) {
         super(apiKey, secretKey)
+    }
+
+    /**
+     * Get all available currencies.
+     */
+    public getCurrencies = async (): Promise<MaxCurrency[]> => {
+        const currencies = await this._sendPublicRequest<Currency[]>('GET', '/api/v2/currencies');
+        return currencies.map(currency => {
+            return {
+                id: currency.id.toUpperCase(),
+                precision: currency.precision,
+                sygnaSupported: currency.sygna_supported,
+                mWalletSupported: currency.m_wallet_supported,
+                minBorrowAmount: Number(currency.min_borrow_amount)
+            };
+        });
     }
 
     /**

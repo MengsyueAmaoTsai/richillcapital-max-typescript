@@ -9,6 +9,10 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
 (async () => {
     const client = new MaxTradingClient(API_KEY, SECRET_KEY);
     
+    // Get currencies
+    const currencies = await client.getCurrencies();
+    console.log(`Currencies: {currencies.length}`);
+
     // Get server time
     // const serverTime = await client.getServerTime();
     // console.log(`Server time: ${serverTime}`);
