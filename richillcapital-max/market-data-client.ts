@@ -175,6 +175,7 @@ class MaxMarketDataClient extends MaxClient {
         };
         this._websocketClient?.send(JSON.stringify(data));
     };
+    
     public unsubscribeMarketTrade = (market: string) => {
         const data = {
             id: 'richillcapital-max',

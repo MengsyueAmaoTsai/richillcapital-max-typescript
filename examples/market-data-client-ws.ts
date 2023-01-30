@@ -16,13 +16,16 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
     client
         .on('websocketOpened', () => {
             console.log('MDC webscoekt opened');
-            client.subscribeMarketStatus();
+            // client.subscribeMarketStatus();
+            // client.subscribeTicker(market);
+            // client.subscribeOrderBook(market);
+            // client.subscribeMarketTrade(market);
         })
         .on('websocketError', (error: Error) => {
-            console.log(`WS error: ${error}`);
+            console.log(`MDC WS error: ${error}`);
         })
         .on('websocketClose', (code: number, reason: Buffer) => {
-            console.log(`WS closed: Code: ${code} Reason: ${reason}`);
+            console.log(`MDC WS closed: Code: ${code} Reason: ${reason}`);
         })
 
 })();
