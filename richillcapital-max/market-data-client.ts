@@ -277,7 +277,23 @@ class MaxMarketDataClient extends MaxClient {
 
     //#endregion
 
-    protected _onWebSocketMessage(data: RawData): void {}
+    protected _onWebSocketMessage(data: RawData): void {
+        const obj = JSON.parse(data.toString());
+        const { e: eventType } = obj;
+
+        switch (eventType) {
+            case 'error':
+                break;
+            case 'subscribed':
+                break;
+            case 'unsubscribed':
+                break;
+            case 'snapshot':
+                break;
+            case 'update':
+                break;
+        }
+    }
 }
 
 

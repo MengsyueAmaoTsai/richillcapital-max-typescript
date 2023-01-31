@@ -1,8 +1,9 @@
 import * as crypto from 'crypto';
 import { RawData } from 'ws';
 import MaxClient from "./client";
-import { MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
+import { MaxAccountBalance, MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
 import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
+import { WebSocketAccountMessage } from './messages';
 
 interface MaxTradingClient {
     authenticate: () => void;
@@ -402,7 +403,34 @@ class MaxTradingClient extends MaxClient {
      */
     private __generateWebSocketSignature = (nonce: number): string => crypto.createHmac('sha256', this._secretKey).update(nonce.toString()).digest('hex');
     
-    protected _onWebSocketMessage(data: RawData): void {}
+    protected _onWebSocketMessage(data: RawData): void {
+        const obj = JSON.parse(data.toString());
+        const { e: eventType } = obj;
+
+        switch (eventType) {
+            case 'error':
+                break;
+            case 'subscribed':
+                break;
+            case 'unsubscribed':
+                break;
+            case 'authenticated':
+                break;
+            case 'account_snapshot':
+                break;
+            case 'order_snapshot':
+                break;
+            case 'trade_snapshot':
+                break;
+            case 'account_update':
+                break;
+            case 'order_update':
+                break;
+            case 'trade_update':
+                break;                
+        }
+    }
 };
+
 
 export default MaxTradingClient;

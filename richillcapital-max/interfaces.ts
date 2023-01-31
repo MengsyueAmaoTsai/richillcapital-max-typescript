@@ -141,3 +141,15 @@ export interface MaxMarketSummary {
     tickers: MaxTicker[],
     coins: MaxCoin[]
 }
+
+export interface MaxAccountBalance {
+    market: string;
+    status: string;
+    baseUnit: string;
+    baseUnitPrecision: number;
+    minBaseAmount: number;
+    quoteUnit: string;
+    quoteUnitPrecision: number;
+    minQuoteAmount: number;
+    mWalletSupport: boolean
+}
