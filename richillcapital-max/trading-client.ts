@@ -1,9 +1,8 @@
 import * as crypto from 'crypto';
 import { RawData } from 'ws';
 import MaxClient from "./client";
-import { MaxAccountBalance, MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
+import {  MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
 import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
-import { WebSocketAccountMessage } from './messages';
 
 interface MaxTradingClient {
     authenticate: () => void;
