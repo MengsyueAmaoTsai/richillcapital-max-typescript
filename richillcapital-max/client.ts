@@ -161,11 +161,11 @@ abstract class MaxClient extends EventEmitter {
         return crypto.createHmac('sha256', this._secretKey).update(encodedPayload).digest('hex');
     };
 
-    private __onWebSocketOpen = () => this.emit('websocketOpened');
+    private __onWebSocketOpen = (): boolean => this.emit('websocketOpened');
 
-    private __onWebSocketClose = (code: number, reason: Buffer) => this.emit('websocketError', code, reason);
+    private __onWebSocketClose = (code: number, reason: Buffer): boolean => this.emit('websocketError', code, reason);
 
-    private __onWebSocketError = (error: Error) => this.emit('websocketError', error);
+    private __onWebSocketError = (error: Error): boolean => this.emit('websocketError', error);
 
     protected abstract _onWebSocketMessage(data: RawData): void;
 }
