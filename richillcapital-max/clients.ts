@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import qs from "qs";
 import winston from "winston";
 import { WebSocket } from "ws";
+import * as crypto from 'crypto';
 
 
 const REST_URL = 'https://max-api.maicoin.com';
@@ -50,8 +51,8 @@ class MaxClient extends EventEmitter {
     protected sendRequestPublic = async <T>(
         method: string, 
         endpoint: string, 
-        paramters: {} = {}
-    ): Promise<T> => await this.sendRequest<T>(method, endpoint, paramters);
+        parameters: {} = {}
+    ): Promise<T> => await this.sendRequest<T>(method, endpoint, parameters);
     
     private sendRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
         try {
@@ -173,6 +174,28 @@ export class MaxTradingClient extends MaxClient {
     public constructor(apiKey: string, secretKey: string) {
         super(apiKey, secretKey)
     }
+
+    public authenticate = (): void => {
+        const nonce = Date.now();
+        const request = {
+            action: 'auth',
+            apiKey: this.apiKey,
+            nonce: nonce,
+            signature: this.generateWebSocketSignature(nonce)
+        };
+    }
+
+    public subscribeAccount = (): void => {
+    }
+
+    public subscribeOrder = (): void => {
+    }
+
+    public subscribeTrade = (): void => {
+    }
+
+    private generateWebSocketSignature = (nonce: number) => 
+        crypto.createHmac('sha256', this.secretKey).update(nonce.toString()).digest('hex');
 }
 
 
