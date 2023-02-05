@@ -86,20 +86,53 @@ export class MaxMarketDataClient extends MaxClient {
         super(apiKey, secretKey)
     }
 
-    public getMarketTrades = async (market: string) => {
-        
+    public getMarketTrades = async (
+        market: string, 
+        limit: number = 1000, 
+        orderBy: 'desc' | 'asc' = 'desc', 
+        pagenation: boolean = false
+    ) => {
+        const parameters = {
+            market: market.toLowerCase(),
+            limit: limit,
+            orderBy: orderBy.toLowerCase(),
+            pagenation: pagenation
+        };
+        const json = await this.sendRequestPublic('GET', `/api/v2/trades`, parameters)
     }
 
-    public getCandles = async (market: string) => {
-
+    public getCandles = async (
+        market: string,
+        interval: number = 1,
+        limit: number = 1000
+    ) => {
+        const parameters = {
+            market: market.toLowerCase(),
+            period: interval,
+            limit: limit
+        };
+        const json = await this.sendRequestPublic('GET', `/api/v2/k`, parameters);
     }
 
     public getTicker = async (market: string) => {
-
+        const json = await this.sendRequestPublic('GET', `/api/v2/tickers/${market.toLowerCase()}`);
     }
 
-    public getOrderBook = async (market: string) => {
+    public getMarketSummary = async () => {
+        const json = await this.sendRequestPublic('GET', '/api/v2/summary');
+    }
 
+    public getOrderBook = async (
+        market: string,
+        limit: number = 1000,
+        sortByPrice: boolean = false
+    ) => {
+        const parameters = {
+            market: market.toLowerCase(),
+            limit: limit,
+            sort_by_price: sortByPrice
+        };
+        const json = await this.sendRequestPublic('GET', `/api/v2/depth`, parameters);
     }
 
     public subscribeMarketStatus = () => {
