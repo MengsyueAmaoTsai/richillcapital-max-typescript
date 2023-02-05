@@ -33,11 +33,11 @@
     "./dist/*"
   ],
   "scripts": {
-    "rest:market": "ts-node ./examples/market-data-client.ts",
-    "rest:trading": "ts-node ./examples/trading-client.ts",
-    "rest": "npm run rest:market && npm run rest:trading",
-    "ws:market": "ts-node ./examples/market-data-client-ws.ts",
-    "ws:trading": "ts-node ./examples/trading-client-ws.ts",
+    "rest:m": "ts-node ./examples/market-data-client.ts",
+    "rest:t": "ts-node ./examples/trading-client.ts",
+    "ws:m": "ts-node ./examples/market-data-client-ws.ts",
+    "ws:t": "ts-node ./examples/trading-client-ws.ts",
+    
     "feed": "ts-node ./examples/datafeed.ts",
     "broker": "ts-node ./examples/brokerage.ts",
 
@@ -54,6 +54,7 @@
   "license": "MIT",
   "dependencies": {
     "qs": "^6.11.0",
+    "winston": "^3.8.2",
     "ws": "^8.12.0"
   },
   "devDependencies": {
@@ -62,6 +63,7 @@
     "@types/node": "^18.11.18",
     "@types/qs": "^6.9.7",
     "@types/webpack": "^5.28.0",
+    "@types/winston": "^2.4.4",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.0.3",
     "rimraf": "^4.1.2",

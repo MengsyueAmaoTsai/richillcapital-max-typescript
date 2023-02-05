@@ -1,7 +1,7 @@
 import { RawData } from "ws";
-import MaxClient from "./client";
-import { MaxCandle, MaxDepth, MaxMarketSummary, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfaces";
-import { OrderBook, MarketTrade, Ticker, MarketSummary } from "./max-types";
+import MaxClient from "./clientv2";
+import { MaxCandle, MaxDepth, MaxMarketSummary, MaxMarketTrade, MaxOrderBook, MaxTicker } from "./interfacesv1";
+import { OrderBook, MarketTrade, Ticker, MarketSummary } from "./max-typesv1";
 
 interface MaxMarketDataClient {
     on(event: 'orderbookUpdate', listener: () => void): this;

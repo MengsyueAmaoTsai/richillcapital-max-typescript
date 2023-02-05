@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 import { RawData } from 'ws';
-import MaxClient from "./client";
-import {  MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfaces';
-import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
+import MaxClient from "./clientv2";
+import {  MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './interfacesv1';
+import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-typesv1';
 
 interface MaxTradingClient {
     on(event: 'orderSnapshot', listener: () => void): this;
@@ -11,7 +11,7 @@ interface MaxTradingClient {
     on(event: 'orderUpdate', listener: () => void): this;
     on(event: 'tradeUpdate', listener: () => void): this;
     on(event: 'accountUpdate', listener: () => void): this;
-    
+
     authenticate: () => void;
 };
 

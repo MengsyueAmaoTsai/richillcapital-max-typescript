@@ -100,6 +100,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["richillcapital-max/**/*"],
+  "include": ["richillcapital-max/**/*", "temp/client.ts", "temp/client.ts", "temp/clientv2.ts", "temp/indedx1.ts", "temp/index.ts", "temp/interfacesv1.ts", "temp/market-data-client.ts", "temp/market-data-clientv1.ts", "temp/max-typesv1.ts", "temp/trading-client.ts", "temp/trading-clientv1.ts"],
   "exclude": ["node_modules"]
 }

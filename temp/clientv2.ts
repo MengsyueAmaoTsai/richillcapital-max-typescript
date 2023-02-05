@@ -2,8 +2,8 @@ import * as crypto from 'crypto';
 import EventEmitter from "events";
 import * as qs from 'qs';
 import WebSocket, { RawData } from "ws";
-import { MaxMarket } from './interfaces';
-import { Market } from './max-types';
+import { MaxMarket } from './interfacesv1';
+import { Market } from './max-typesv1';
 
 
 const REST_URL = 'https://max-api.maicoin.com';
@@ -55,12 +55,12 @@ abstract class MaxClient extends EventEmitter {
                 name: item.name,
                 marketStatus: item.market_status, 
                 baseUnit: item.base_unit, 
-                baseUnit_precision: item.base_unit_precision,
+                baseUnitPrecision: item.base_unit_precision,
                 minBaseAmount: item.min_base_amount,
                 quoteUnit: item.quote_unit,
-                quoteUnit_precision: item.quote_unit_precision,
+                quoteUnitPrecision: item.quote_unit_precision,
                 minQuoteAmount: item.min_quote_amount,
-                mWalletSupported: item.m_wallet_supported
+                mWalletSupported: item.m_wallet_supported,
             }
         });
     };

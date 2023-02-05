@@ -1,30 +1,27 @@
-import MaxMarketDataClient from "../richillcapital-max/market-data-client";
+import { EventEmitter } from 'events';
 import * as dotenv from 'dotenv';
-import { EventEmitter } from "stream";
+import * as winston from 'winston';
+import { MaxMarketDataClient } from '../richillcapital-max';
 
 dotenv.config();
 
+const getLogger = (): winston.Logger => {
+    return winston.createLogger({
+        format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(info => {
+                return `${info.timestamp} - [${info.level.toUpperCase()}] - ${info.message}`;
+            }),
+        ),
+        transports: [
+            new winston.transports.Console(),
+        ]
+    });
+}
+
 interface ConnectionOptions {
-    apikey: string;
-    secretKey: string
-}
-
-interface MaxDataFeed {
-
-}
-
-interface Tick {
-    symbol: string;
-    timestamp: number;
-    last: number;
-    size: number;
-}
-
-interface OrderBook {
-    symbol: string;
-    timestamp: number;
-    bids: Array<Array<number>>;
-    asks: Array<Array<number>>;
+    apiKey: string;
+    secretKey: string;
 }
 
 interface Instrument {
@@ -33,121 +30,112 @@ interface Instrument {
     exchange: string;
 }
 
-class MaxDataFeed extends EventEmitter {
-
-    private __client?: MaxMarketDataClient;
-    private __connectionOptions?: ConnectionOptions;
-    private __connectTime?: number;
-    private __instruments?: Array<Instrument>;
-
-    constructor() {
-        super()
-    }
-    
-    public isConnected: boolean = false;
-
-    public connect = async (connectionOptions: ConnectionOptions): Promise<void> => {
-        if (this.isConnected) return;
-
-        this.__connectionOptions = connectionOptions;
-        if (!this.__client) {
-            this.__client = new MaxMarketDataClient(connectionOptions.apikey, connectionOptions.secretKey)
-                .on('websocketOpened', this.__handleWebSocketOpened)
-                .on('websocketError', this.__handleErrorEvent)
-                .on('websocketClosed', (code: number, reason: Buffer) => {})
-                .on('error', () => {})
-                .on('subscribed', this.__handleSubscribedEvent)
-                .on('unsubscribed', () => {})
-                .on('marketStatusSnapshot', () => {})
-                .on('tickerSnapshot', () => {})
-                .on('marketTradeSnapshot', () => {})
-                .on('orderBookSnapshot', () => {})
-                .on('marketStatusUpdate', () => {})
-                .on('tickerUpdate', () => {})
-                .on('marketTradeUpdate', () => {})
-                .on('orderBookUpdate', () => {})
-                ;
-        }
-
-        // Check Rest API server is enabled.
-        const serverTime = await this.__client.getServerTime();
-        console.log(`[INFO] - Check REST API server availiable. ServerTime: ${new Date(serverTime)}`);
-
-        if (serverTime) {
-            this.__client.connectWebSocket();
-        }
-    }
-    
-    private __handleWebSocketOpened = async () => {
-        this.isConnected = true;
-        
-        const maxMarkets = await this.__client?.getMarkets();
-        this.__instruments = maxMarkets?.map(market => {
-            return {
-                symbol: market.id.toUpperCase(),
-                description: market.name.toUpperCase(),
-                exchange: 'MAX'
-            }
-        });
-        console.log(`[INFO] - Download instruments data completed. (${this.__instruments?.length})`);
-
-        if (this.__instruments?.length !== 0) {
-            this.__client?.subscribeMarketStatus();
-        }
-    }
-
-    private __handleErrorEvent = (error: Error) => {
-        console.log(`[Error] - Error from websocket: ${error}`);
-    }
-
-    private __handleSubscribedEvent = () => {
-        console.log(`[INFO] - Subscribed`);
-    }
-
-    private __handleUnsubscribedEvent = () => {
-        console.log(`[INFO] - Unsubscribed`);
-    }
-    
-    private __handleOrderBookEvent = () => {
-        const orderBookEvent = {
-            timestamp: 12313215665,
-            market: 'BTCTWD',
-            asks: [],
-            bids: [],
-        }
-    }
-
-    private __handleMarketTradeEvent = () => {
-    }
-
-    private __handleTickerEvent = () => {
-    }
-
-    private __handleMarketStatusEvent = () => {
-    }
-
-    private __handleOrderBookUpdateEvent = () => {}
-    private __handleMarketTradeUpdateEvent = () => {}
-
-    private __emitConnectedEvent = (): boolean => this.emit('connected');
-    private __emitDisconnectedEvent = (): boolean => this.emit('disconnected');
-    private __emitInstrumentEvent = (instruments: Array<Instrument>): boolean => this.emit('instrument', instruments)
-    private __emitTickEvent = (tick: Tick): boolean => this.emit('tick', tick);
-    private __emitOrderBookEvent = (orderbook: OrderBook): boolean => this.emit('orderBook', orderbook);
+interface Bar {
+    symbol: string;
+    timestamp: number;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
 }
 
+interface Tick {
+    symbol: string;
+    timestamp: number;
+    price: number;
+    size: number;
+}
 
+interface Depth {
+    price: number;
+    size: number;
+}
 
+interface OrderBook {
+    symbol: string;
+    timestamp: number;
+    bids: Array<Depth>;
+    asks: Array<Depth>;
+}
+
+interface MaxDataFeed {
+    on(event: 'connected', listener: () => void): this;
+    on(event: 'disconnected', listener: () => void): this;
+    on(event: 'tick', listener: (tick: Tick) => void): this;
+    on(event: 'orderbook', listener: (orderbook: OrderBook) => void): this;
+}
+
+class MaxDataFeed extends EventEmitter {
+    private logger: winston.Logger = getLogger();
+
+    private client?: MaxMarketDataClient;
+
+    private options?: ConnectionOptions;
+    
+    public constructor() {
+        super()
+    }
+
+    public connect = (options: ConnectionOptions) => {
+        this.logger.info(`Connecting to MAX ...`);
+        
+        this.client = new MaxMarketDataClient(options.apiKey ?? '', options.secretKey ?? '');
+        this.options = options;
+
+        this.logger.info(`Connected to MAX.`);
+    }
+
+    public disconnect = () => {
+        this.logger.info(`Connecting from MAX ...`);
+        
+        this.logger.info(`Disconnected.`);
+    }
+
+    public getHistoricalBars = async (symbol: string): Promise<Array<Bar>> => {
+        this.logger.info(`Downloading historical bars for ${symbol} ...`);
+        return [];
+    }
+
+    public getHistoricalTicks = async (symbol: string): Promise<Array<Tick>> => {
+        this.logger.info(`Downloading historical ticks for ${symbol} ...`);
+        return [];
+    }
+
+    public getInstruments = async (): Promise<Array<Instrument>> => {
+        this.logger.info(`Downloading instrument data ...`);
+        const markets = await this.client?.getAllMarkets();
+        return [];
+    }
+
+    public subscribe = (symbol: string): void => {
+        this.logger.info(`Subscribe market data for ${symbol} ...`);
+    }
+
+    public unsubscribe = (symbol: string): void => {
+        this.logger.info(`Unsubscribe market data for ${symbol} ...`);
+    }
+}
 
 (async () => {
-    const feed = new MaxDataFeed();
+    const apiKey: string = String(process.env.API_KEY);
+    const secretKey: string = String(process.env.SECRET_KEY);
 
-    // Connect to datafeed.
-    await feed.connect({
-        apikey: process.env.API_KEY as string,
-        secretKey: process.env.SECRET_KEY as string,
+    const feed = new MaxDataFeed();
+    feed.on('connected', () => {})
+        .on('disconnected', () => {})
+        .on('tick', (tick: Tick) => {})
+        .on('orderbook', (orderbook: OrderBook) => {});
+
+    feed.connect({
+        apiKey,
+        secretKey
     });
 
+    const instruments = await feed.getInstruments();
+    console.log(`Instruments: ${instruments.length}`);
+    // const ticks = await feed.getHistoricalTicks(instruments[0].symbol);
+    // const bars = await feed.getHistoricalBars(instruments[0].symbol);
 
-
+    // feed.subscribe(instruments[0].symbol);
 })();
