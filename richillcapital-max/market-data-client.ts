@@ -4,7 +4,14 @@ import { MaxCandle, MaxDepth, MaxMarketSummary, MaxMarketTrade, MaxOrderBook, Ma
 import { OrderBook, MarketTrade, Ticker, MarketSummary } from "./max-types";
 
 interface MaxMarketDataClient {
-
+    on(event: 'orderbookUpdate', listener: () => void): this;
+    on(event: 'tickerUpdate', listener: () => void): this;
+    on(event: 'marketStatusUpdate', listener: () => void): this;
+    on(event: 'marketTradeUpdate', listener: () => void): this;
+    on(event: 'orderbookSnapshot', listener: () => void): this;
+    on(event: 'tickerSnapshot', listener: () => void): this;
+    on(event: 'marketTradeSnapshot', listener: () => void): this;
+    on(event: 'marketStatusSnapshot', listener: () => void): this;
 };
 
 class MaxMarketDataClient extends MaxClient {

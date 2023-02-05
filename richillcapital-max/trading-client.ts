@@ -5,6 +5,13 @@ import {  MaxBalance, MaxCurrency, MaxProfile, MaxTrade, MaxVipLevel } from './i
 import { AccountVipLevelInfo, Balance, Currency, InternalTransfer, Order, Profile, RestResponse, Trade } from './max-types';
 
 interface MaxTradingClient {
+    on(event: 'orderSnapshot', listener: () => void): this;
+    on(event: 'accountSnapshot', listener: () => void): this;
+    on(event: 'tradeSnapshot', listener: () => void): this;
+    on(event: 'orderUpdate', listener: () => void): this;
+    on(event: 'tradeUpdate', listener: () => void): this;
+    on(event: 'accountUpdate', listener: () => void): this;
+    
     authenticate: () => void;
 };
 
