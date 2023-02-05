@@ -39,11 +39,11 @@ export interface MaxMarket {
     name: string;
     marketStatus: string; 
     baseUnit: string; 
-    baseUnit_precision: number;
-    minBaseAmount: number;
+    baseUnitPrecision: number;
+    minimumBaseAmount: number;
     quoteUnit: string;
-    quoteUnit_precision: number;
-    minQuoteAmount: number;
+    quoteUnitPrecision: number;
+    minimumQuoteAmount: number;
     mWalletSupported: boolean;
 };
 
