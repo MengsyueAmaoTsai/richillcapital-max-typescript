@@ -11,8 +11,7 @@ import { MaxMarketDataClient } from '../richillcapital-max';
     const secretKey: string = String(process.env.SECRET_KEY);
 
     const market = 'BTCTWD'
-    const client = new MaxMarketDataClient(apiKey, secretKey);
-    client
+    const client = new MaxMarketDataClient(apiKey, secretKey)
         .on('websocketOpen', () => {
             client.subscribeMarketStatus();
             client.subscribeOrderBook(market);
@@ -24,8 +23,29 @@ import { MaxMarketDataClient } from '../richillcapital-max';
         .on('websocketError', (error: Error) => {
             console.log(error);
         })
-        .on('websocketMessage', (message: string) => {
-            console.log(message);
+        .on('marketTradeUpdate', () => {
+            
+        })
+        .on('marketTradeSnapshot', () => {
+
+        })
+        .on('marketStatusUpdate', () => {
+
+        })
+        .on('marketStatusSnapshot', () => {
+
+        })
+        .on('orderbookSnapshot', () => {
+
+        })
+        .on('orderbookUpdate', () => {
+
+        })
+        .on('tickerSnapshot', () => {
+
+        })
+        .on('tickerUpdate', () => {
+
         });
 
 
