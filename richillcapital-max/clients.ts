@@ -22,7 +22,7 @@ const getLogger = (): winston.Logger => {
     });
 }
 
-interface MaxClient {
+export interface MaxMarketDataClient {
     on(event: 'websocketOpen', listener: () => void): this;
     on(event: 'websocketClose', listener: (code: number, reason: Buffer) => void): this;
     on(event: 'websocketError', listener: (error: Error) => void): this;
@@ -36,6 +36,20 @@ interface MaxClient {
     on(event: 'orderbookUpdate', listener: () => void): this;
     on(event: 'orderbookSnapshot', listener: () => void): this;
 }
+
+export interface MaxTradingClient {
+    on(event: 'websocketOpen', listener: () => void): this;
+    on(event: 'websocketClose', listener: (code: number, reason: Buffer) => void): this;
+    on(event: 'websocketError', listener: (error: Error) => void): this;
+
+    on(event: 'accountUpdate', listener: () => void): this;
+    on(event: 'accountSnapshot', listener: () => void): this;
+    on(event: 'orderUpdate', listener: () => void): this;
+    on(event: 'orderSnapshot', listener: () => void): this;
+    on(event: 'tradeUpdate', listener: () => void): this;
+    on(event: 'tradeSnapshot', listener: () => void): this;
+}
+
 
 class MaxClient extends EventEmitter {
 

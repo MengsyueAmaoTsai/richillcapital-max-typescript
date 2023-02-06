@@ -66,6 +66,7 @@ interface MaxDataFeed {
     on(event: 'orderbook', listener: (orderbook: OrderBook) => void): this;
 }
 
+
 class MaxDataFeed extends EventEmitter {
     private logger: winston.Logger = getLogger();
 
