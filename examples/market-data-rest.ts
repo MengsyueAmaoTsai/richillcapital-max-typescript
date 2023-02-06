@@ -1,5 +1,4 @@
 
-import { EventEmitter } from 'events';
 import * as dotenv from 'dotenv';
 import * as winston from 'winston';
 import { MaxMarketDataClient } from '../richillcapital-max';
