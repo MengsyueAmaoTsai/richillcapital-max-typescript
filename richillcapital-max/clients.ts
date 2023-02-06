@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import qs from "qs";
 import winston from "winston";
-import { WebSocket } from "ws";
+import { RawData, WebSocket } from "ws";
 import * as crypto from 'crypto';
 
 
@@ -46,6 +46,30 @@ class MaxClient extends EventEmitter {
 
     public getAllMarkets = async (): Promise<void> => {
         const json = await this.sendRequestPublic('GET', '/api/v2/markets');
+    }
+
+    protected connectWebSocket = (): void => {
+        this.websocketClient = new WebSocket(WEBSOCKET_URL)
+            .on('open', this.onWebSocketOpened)
+            .on('close', this.onWebSocketClosed)
+            .on('error', this.onWebSocketError)
+            .on('message', this.onWebSocketClosed);
+    }
+    
+    protected onWebSocketOpened = (): void => {
+        this.logger.info(`WebSocket opened.`)
+    }
+
+    protected onWebSocketClosed = (code: number, reason: Buffer): void => {
+        this.logger.info(`WebSocket closed. code: ${code} reason: ${reason}`);
+    }
+
+    protected onWebSocketError = (error: Error): void => {
+        this.logger.info(`WebSocket error: ${error}.`);
+    }
+
+    protected onWebSocketMessage = (data: RawData): void => {
+        this.logger.info(`WebSocket message: ${JSON.parse(data.toString())}.`);
     }
 
     protected sendRequestPublic = async <T>(
@@ -186,12 +210,20 @@ export class MaxTradingClient extends MaxClient {
     }
 
     public subscribeAccount = (): void => {
+        const request = {
+        }
     }
 
     public subscribeOrder = (): void => {
+        const request = {
+
+        }
     }
 
     public subscribeTrade = (): void => {
+        const request = {
+
+        }
     }
 
     private generateWebSocketSignature = (nonce: number) => 
