@@ -137,6 +137,7 @@ class MaxDataFeed extends EventEmitter {
     }
 }
 
+
 (async () => {
 
     const apiKey: string = String(process.env.API_KEY);

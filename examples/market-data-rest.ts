@@ -5,6 +5,9 @@ import * as winston from 'winston';
 import { MaxMarketDataClient } from '../richillcapital-max';
 
 
+dotenv.config();
+
+
 (async () => {
 
     const apiKey: string = String(process.env.API_KEY);

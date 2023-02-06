@@ -1,8 +1,10 @@
 
-import { EventEmitter } from 'events';
 import * as dotenv from 'dotenv';
 import * as winston from 'winston';
 import { MaxTradingClient } from '../richillcapital-max';
+
+
+dotenv.config();
 
 
 (async () => {
