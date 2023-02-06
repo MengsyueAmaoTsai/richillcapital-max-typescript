@@ -33,10 +33,10 @@
     "./dist/*"
   ],
   "scripts": {
-    "rest:m": "ts-node ./examples/market-data-client.ts",
-    "rest:t": "ts-node ./examples/trading-client.ts",
-    "ws:m": "ts-node ./examples/market-data-client-ws.ts",
-    "ws:t": "ts-node ./examples/trading-client-ws.ts",
+    "rest:m": "ts-node ./examples/market-data-rest.ts",
+    "rest:t": "ts-node ./examples/trading-rest.ts",
+    "ws:m": "ts-node ./examples/market-data-ws.ts",
+    "ws:t": "ts-node ./examples/trading-ws.ts",
     
     "feed": "ts-node ./examples/datafeed.ts",
     "broker": "ts-node ./examples/brokerage.ts",

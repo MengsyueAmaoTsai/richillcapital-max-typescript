@@ -73,15 +73,34 @@ class MaxDataFeed extends EventEmitter {
 
     private options?: ConnectionOptions;
     
+    private isConnected: boolean = false;
+
     public constructor() {
         super()
     }
 
-    public connect = (options: ConnectionOptions) => {
+    public connect = async (options: ConnectionOptions): Promise<void> => {
+        if (this.isConnected) {
+            this.logger.info(`MAX datafeed is already connected.`);
+            return;
+        }
+        
         this.logger.info(`Connecting to MAX ...`);
         
-        this.client = new MaxMarketDataClient(options.apiKey ?? '', options.secretKey ?? '');
+        if (!this.client) {
+            this.client = new MaxMarketDataClient(options.apiKey ?? '', options.secretKey ?? '');
+        }
         this.options = options;
+        
+        const serverTime = await this.client?.getServerTime();
+        this.logger.info(`Server time: ${serverTime}`);
+        
+        if (!serverTime) {
+            this.logger.error(`Cannot connect to MAX API server.`);
+            return;
+        }
+
+        // Connect to webscoekt
 
         this.logger.info(`Connected to MAX.`);
     }
@@ -118,6 +137,7 @@ class MaxDataFeed extends EventEmitter {
 }
 
 (async () => {
+
     const apiKey: string = String(process.env.API_KEY);
     const secretKey: string = String(process.env.SECRET_KEY);
 
@@ -127,7 +147,7 @@ class MaxDataFeed extends EventEmitter {
         .on('tick', (tick: Tick) => {})
         .on('orderbook', (orderbook: OrderBook) => {});
 
-    feed.connect({
+    await feed.connect({
         apiKey,
         secretKey
     });

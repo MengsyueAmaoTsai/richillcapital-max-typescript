@@ -22,6 +22,13 @@ const getLogger = (): winston.Logger => {
     });
 }
 
+interface MaxClient {
+    on(event: 'websocketOpen', listener: () => void): this;
+    on(event: 'websocketClose', listener: (code: number, reason: Buffer) => void): this;
+    on(event: 'websocketError', listener: (error: Error) => void): this;
+    on(event: 'websocketMessage', listener: (message: string) => void): this;
+}
+
 class MaxClient extends EventEmitter {
 
     protected logger: winston.Logger = getLogger();
@@ -48,20 +55,26 @@ class MaxClient extends EventEmitter {
         const json = await this.sendRequestPublic('GET', '/api/v2/markets');
     }
 
-    protected connectWebSocket = (): void => {
+    public connectWebSocket = (): void => {
+        this.logger.info(`Connecting to websocket ...`);
         this.websocketClient = new WebSocket(WEBSOCKET_URL)
             .on('open', this.onWebSocketOpened)
             .on('close', this.onWebSocketClosed)
             .on('error', this.onWebSocketError)
-            .on('message', this.onWebSocketClosed);
+            .on('message', this.onWebSocketMessage);
+    }
+
+    protected sendMessage = (request: object) => {
+        this.logger.info(`Send message to websocket => ${JSON.stringify(request)}`);
+        this.websocketClient?.send(JSON.stringify(request));
     }
     
     protected onWebSocketOpened = (): void => {
-        this.logger.info(`WebSocket opened.`)
+        this.emit('websocketOpen');
     }
 
-    protected onWebSocketClosed = (code: number, reason: Buffer): void => {
-        this.logger.info(`WebSocket closed. code: ${code} reason: ${reason}`);
+    protected onWebSocketClosed = (): void => {
+        this.logger.info(`WebSocket closed.`);
     }
 
     protected onWebSocketError = (error: Error): void => {
@@ -69,7 +82,7 @@ class MaxClient extends EventEmitter {
     }
 
     protected onWebSocketMessage = (data: RawData): void => {
-        this.logger.info(`WebSocket message: ${JSON.parse(data.toString())}.`);
+        this.logger.info(`WebSocket message: ${data.toString()}.`);
     }
 
     protected sendRequestPublic = async <T>(
@@ -162,34 +175,113 @@ export class MaxMarketDataClient extends MaxClient {
 
     public subscribeMarketStatus = () => {
         const request = {
+            id: 'richillcapital-max',
             action: 'sub',
-            channel: 'market_status'
-        };
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };       
+        this.sendMessage(request);
     }
+
+    public unsubscribeMarketStatus = (): void => {
+        const request = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'market_status',
+                }
+            ]
+        };        
+        this.sendMessage(request);
+    };
 
     public subscribeOrderBook = (market: string) => {
         const request = {
+            id: 'richillcapital-max',
             action: 'sub',
-            channel: 'book',
-            market: market.toLowerCase()
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market.toLowerCase(),
+                }
+            ]
         }
+        this.sendMessage(request);
     }
+
+    public unsubscribeOrderBook = (market: string) => {
+        const request = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'book',
+                    market: market.toLowerCase(),
+                }
+            ]
+        };
+        this.sendMessage(request);
+    };
 
     public subscribeMarketTrade = (market: string) => {
         const request = {
+            id: 'richillcapital-max',
             action: 'sub',
-            channel: 'trade',
-            market: market.toLowerCase()            
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market.toLowerCase()
+                }
+            ]         
         }
+        this.sendMessage(request);
     }
+
+    public unsubscribeMarketTrade = (market: string) => {
+        const request = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    channel: 'trade',
+                    market: market.toLowerCase()
+                }
+            ]
+        };
+        this.sendMessage(request);
+    };
 
     public subscribeTicker = (market: string) => {
         const request = {
+            id: 'richillcapital-max',
             action: 'sub',
-            channel: 'ticker',
-            market: market.toLowerCase()
+            subscriptions: [
+                {
+                    market: market.toLowerCase(),
+                    channel: 'ticker',
+                }
+            ]
         }
+        this.sendMessage(request);
     }
+
+    public unsubscribeTicker = (market: string): void => {
+        const request = {
+            id: 'richillcapital-max',
+            action: 'unsub',
+            subscriptions: [
+                {
+                    market: market.toLowerCase(),
+                    channel: 'ticker',
+                }
+            ]
+        };           
+        this.sendMessage(request);
+    };    
 }
 
 
