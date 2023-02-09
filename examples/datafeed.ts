@@ -69,11 +69,8 @@ interface MaxDataFeed {
 
 class MaxDataFeed extends EventEmitter {
     private logger: winston.Logger = getLogger();
-
     private client?: MaxMarketDataClient;
-
     private options?: ConnectionOptions;
-    
     private isConnected: boolean = false;
 
     public constructor() {
@@ -146,6 +143,7 @@ class MaxDataFeed extends EventEmitter {
         
         this.client?.subscribeMarketStatus();
         
+        this.isConnected = true;
         this.emit('connected');
     }
 
