@@ -27,8 +27,6 @@ interface Balance {
 interface Account {
     id: string;
     name: string;
-
-    balances: Array<Balance>
 }
 
 interface Order {
@@ -83,6 +81,7 @@ class MaxBrokerage extends EventEmitter {
 
     public getAllAccounts = async () => {
         this.logger.info(`Get all accounts`);
+        const accountData = this.client?.getAllAccounts();
     }
 }
 
@@ -92,4 +91,6 @@ class MaxBrokerage extends EventEmitter {
 
     const broker = new MaxBrokerage();
     await broker.connect({ apiKey, secretKey });
+
+    const account = broker.getAllAccounts();
 })();

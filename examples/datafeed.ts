@@ -90,6 +90,10 @@ class MaxDataFeed extends EventEmitter {
         
         if (!this.client) {
             this.client = new MaxMarketDataClient(options.apiKey ?? '', options.secretKey ?? '');
+            this.client.on('websocketOpen', this.onWebSocketOpened)
+            this.client.on('marketStatusSnapshot', this.onMarketStatusSnapshot)
+            this.client.on('marketStatusUpdate', this.onMarketStatusUpdate)
+            ;
         }
         this.options = options;
         
@@ -102,6 +106,7 @@ class MaxDataFeed extends EventEmitter {
         }
 
         // Connect to webscoekt
+        this.client.connectWebSocket();
 
         this.logger.info(`Connected to MAX.`);
     }
@@ -134,6 +139,60 @@ class MaxDataFeed extends EventEmitter {
 
     public unsubscribe = (symbol: string): void => {
         this.logger.info(`Unsubscribe market data for ${symbol} ...`);
+    }
+
+    private onWebSocketOpened = () => {
+        this.logger.info(`MAX WebSocket Opened`);
+        
+        this.client?.subscribeMarketStatus();
+        
+        this.emit('connected');
+    }
+
+    private onWebSocketClosed = () => {
+        this.logger.info(`MAX Websocket server disconencted.`);
+
+        this.emit('disconnected');
+    }
+
+    private onSubscribed = () => {
+
+    }
+
+    private onUnsubscribed = () => {
+
+    }
+
+    private onMarketStatusSnapshot = () => {
+        this.logger.info(`Market status snapshot`);
+    }
+
+    private onMarketStatusUpdate = () => {
+        this.logger.info(`Market status updated`);
+    }
+    
+    private onMarketTradeSnapshot = () => {
+
+    }
+
+    private onMarketTradeUpdate = () => {
+
+    }
+
+    private onOrderBookSnapshot = () => {
+
+    }
+
+    private onOrderBookUpdate = () => {
+        this.emit('orderbook');
+    }
+
+    private onTickerSnapshot = () => {
+
+    }
+
+    private onTickerUpdate = () => {
+        this.emit('tick');
     }
 }
 
