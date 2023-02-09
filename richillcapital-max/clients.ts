@@ -344,7 +344,7 @@ export class MaxTradingClient extends MaxClient {
     }
 
     public getAllCurrencies = async () => {
-        const json = await this.sendRequestPrivate('GET', '/api/v2/currencies');
+        const json = await this.sendRequestPublic('GET', '/api/v2/currencies');
     }
 
     public authenticate = (): void => {
