@@ -1,6 +1,5 @@
 
 import * as dotenv from 'dotenv';
-import * as winston from 'winston';
 import { MaxMarketDataClient } from '../richillcapital-max';
 
 
