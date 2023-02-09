@@ -15,5 +15,7 @@ dotenv.config();
 
     await client.getServerTime();
     await client.getAllMarkets();
+
+    await client.getAllCurrencies();
     
 })();

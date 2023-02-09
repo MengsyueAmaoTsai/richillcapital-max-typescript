@@ -112,7 +112,16 @@ class MaxClient extends EventEmitter {
         endpoint: string, 
         parameters: {} = {}
     ): Promise<T> => await this.sendRequest<T>(method, endpoint, parameters);
-    
+
+    protected sendRequestPrivate = async <T>(
+        method: string, 
+        endpoint: string, 
+        parameters: {} = {}
+    ): Promise<T> => {
+        if (!this.apiKey || !this.secretKey) return Promise.reject(new Error(`Missing API KEY or SECRET KEY`));
+        return await this.sendRequest<T>(method, endpoint, this.buildAuthHeaders(endpoint, parameters));
+    }   
+
     private sendRequest = async <T>(method: string, endpoint: string, paramters: {} = {}, headers?: {}): Promise<T> => {
         try {
             this.logger.info(`Send request => ${method} ${endpoint}`);
@@ -136,6 +145,27 @@ class MaxClient extends EventEmitter {
             uri += `?${qs.stringify(queryParameters, { arrayFormat: 'brackets' })}`
         }
         return uri;
+    };
+
+    private buildAuthHeaders = (endpoint: string, parameters: {}) => {
+        const parametersToSigned = Object.assign({}, parameters, { path: endpoint });
+        const encodedPayload = this.encodeStringToBase64(JSON.stringify(parametersToSigned));
+        return {
+            ...this.defaultHeaders,
+            'X-MAX-ACCESSKEY': this.apiKey,
+            'X-MAX-PAYLOAD': encodedPayload,
+            'X-MAX-SIGNATURE': this.generateRestSignature(encodedPayload)
+        };        
+    }
+
+    private encodeStringToBase64 = (text: string): string => {
+        return Buffer.from(text).toString('base64');
+    };    
+
+    private generateRestSignature = (encodedPayload: string) => {
+        return crypto.createHmac('sha256', this.secretKey)
+            .update(encodedPayload)
+            .digest('hex');
     };
 }
 
@@ -313,6 +343,10 @@ export class MaxTradingClient extends MaxClient {
         super(apiKey, secretKey)
     }
 
+    public getAllCurrencies = async () => {
+        const json = await this.sendRequestPrivate('GET', '/api/v2/currencies');
+    }
+
     public authenticate = (): void => {
         const nonce = Date.now();
         const request = {
@@ -321,6 +355,7 @@ export class MaxTradingClient extends MaxClient {
             nonce: nonce,
             signature: this.generateWebSocketSignature(nonce)
         };
+        this.websocketClient?.send(JSON.stringify(request));        
     }
 
     public subscribeAccount = (): void => {
@@ -341,7 +376,9 @@ export class MaxTradingClient extends MaxClient {
     }
 
     private generateWebSocketSignature = (nonce: number) => 
-        crypto.createHmac('sha256', this.secretKey).update(nonce.toString()).digest('hex');
+        crypto.createHmac('sha256', this.secretKey)
+            .update(nonce.toString())
+            .digest('hex');
 }
 
 
