@@ -13,9 +13,14 @@ dotenv.config();
 
     const client = new MaxTradingClient(apiKey, secretKey);
 
+    // Public endpoints
     await client.getServerTime();
     await client.getAllMarkets();
-
     await client.getAllCurrencies();
-    
+
+    // Private endpoints
+    await client.me();
+    await client.getProfile();
+    await client.getAllAccounts();
+    await client.getVipLevelInfo();
 })();

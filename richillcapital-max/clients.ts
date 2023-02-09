@@ -347,6 +347,22 @@ export class MaxTradingClient extends MaxClient {
         const json = await this.sendRequestPublic('GET', '/api/v2/currencies');
     }
 
+    public getAllAccounts = async () => {
+        const json = await this.sendRequestPrivate('GET', '/api/v2/members/accounts');
+    }
+
+    public me = async () => {
+        const json = await this.sendRequestPrivate('GET', '/api/v2/members/me');
+    }
+
+    public getProfile = async () => {
+        const json = await this.sendRequestPrivate('GET', '/api/v2/members/profile');
+    }
+
+    public getVipLevelInfo = async () => {
+        const json = await this.sendRequestPrivate('GET', '/api/v2/members/vip_level');
+    }
+
     public authenticate = (): void => {
         const nonce = Date.now();
         const request = {
