@@ -3,24 +3,12 @@ import qs from "qs";
 import winston from "winston";
 import { RawData, WebSocket } from "ws";
 import * as crypto from 'crypto';
+import { createLogger } from "./utils";
 
 
 const REST_URL = 'https://max-api.maicoin.com';
 const WEBSOCKET_URL = 'wss://max-stream.maicoin.com/ws';
 
-const getLogger = (): winston.Logger => {
-    return winston.createLogger({
-        format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.printf(info => {
-                return `${info.timestamp} - [${info.level.toUpperCase()}] - ${info.message}`;
-            }),
-        ),
-        transports: [
-            new winston.transports.Console(),
-        ]
-    });
-}
 
 export interface MaxMarketDataClient {
     on(event: 'websocketOpen', listener: () => void): this;
@@ -53,7 +41,7 @@ export interface MaxTradingClient {
 
 class MaxClient extends EventEmitter {
 
-    protected logger: winston.Logger = getLogger();
+    protected logger: winston.Logger = createLogger();
 
     protected apiKey: string = '';
     protected secretKey: string = '';
